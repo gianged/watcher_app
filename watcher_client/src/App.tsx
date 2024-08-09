@@ -11,7 +11,7 @@ function App(): React.ReactElement {
                 <Routes>
                     <Route path="/" element={<Login />} />
                     <Route path={"/manage"} element={<Home />}>
-                        // TODO: Add routes for each page here
+                        {/*TODO: Add routes for each page here*/}
                     </Route>
                 </Routes>
             </BrowserRouter>
