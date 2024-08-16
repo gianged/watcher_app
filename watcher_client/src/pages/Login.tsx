@@ -1,25 +1,53 @@
 import "./Login.scss"
-import React from "react";
+import React, { useState } from "react";
 import { Button, Col, Container, Form, Row, Tab, Tabs } from "react-bootstrap";
 
 export const Login = (): React.ReactElement => {
+
+    //region Register
+    const [registerPassword, setRegisterPassword] = useState<string>('');
+    const [registerConfirmPassword, setRegisterConfirmPassword] = useState<string>('');
+    const [registerPasswordError, setRegisterPasswordError] = useState<string>('');
+
+    const handleRegisterPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const input = event.target.value;
+        setRegisterPassword(input);
+        validatePassword(input, registerConfirmPassword);
+    }
+
+    const handleRegisterConfirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const input = event.target.value;
+        setRegisterConfirmPassword(input);
+        validatePassword(registerPassword, input);
+    }
+
+    const validatePassword = (password: string, confirmPassword: string) => {
+        if (password !== confirmPassword) {
+            setRegisterPasswordError('Passwords do not match');
+        } else {
+            setRegisterPasswordError('');
+        }
+    }
+
+    //endregion
+
     return (
         <>
-            <Container className={"mt-5"}>
+            <Container className={"login-container"}>
                 <Row className={"justify-content-center login-row"}>
-                    <Col className={"col-md-6 login-col"}>
-                        <Tabs defaultActiveKey={"login"} id={"login-tabs"} className={"mb-3 login-tabs"}>
+                    <Col className={"col-md-4 login-col"}>
+                        <Tabs defaultActiveKey={"login"} id={"login-tabs"} className={"mb-3 login-tabs"} fill>
                             <Tab eventKey={"login"} title={"Login"}>
                                 <Form>
                                     <Form.Group className={"mb-3"}>
-                                        <Form.Label>Username</Form.Label>
+                                        <Form.Label column={"sm"}>Username</Form.Label>
                                         <Form.Control type={"text"} placeholder={"Username"} />
                                     </Form.Group>
                                     <Form.Group className={"mb-3"}>
-                                        <Form.Label>Password</Form.Label>
+                                        <Form.Label column={"sm"}>Password</Form.Label>
                                         <Form.Control type={"password"} placeholder={"Password"} />
                                     </Form.Group>
-                                    <Button variant={"primary"} type={"submit"}>
+                                    <Button className={"formButton"} variant={"primary"} type={"submit"}>
                                         Login
                                     </Button>
                                 </Form>
@@ -27,18 +55,26 @@ export const Login = (): React.ReactElement => {
                             <Tab eventKey={"register"} title={"Register"}>
                                 <Form>
                                     <Form.Group className={"mb-3"}>
-                                        <Form.Label>Username</Form.Label>
+                                        <Form.Label column={"sm"}>Username</Form.Label>
                                         <Form.Control type={"text"} placeholder={"Username"} />
                                     </Form.Group>
                                     <Form.Group className={"mb-3"}>
-                                        <Form.Label>Password</Form.Label>
-                                        <Form.Control type={"password"} placeholder={"Password"} />
+                                        <Form.Label column={"sm"}>Password</Form.Label>
+                                        <Form.Control type={"password"}
+                                                      value={registerPassword}
+                                                      onChange={handleRegisterPasswordChange}
+                                                      placeholder={"Password"} />
                                     </Form.Group>
                                     <Form.Group className={"mb-3"}>
-                                        <Form.Label>Confirm Password</Form.Label>
-                                        <Form.Control type={"password"} placeholder={"Confirm Password"} />
+                                        <Form.Label column={"sm"}>Confirm Password</Form.Label>
+                                        <Form.Control type={"password"}
+                                                      value={registerConfirmPassword}
+                                                      onChange={handleRegisterConfirmPasswordChange}
+                                                      placeholder={"Confirm Password"} />
                                     </Form.Group>
-                                    <Button variant={"primary"} type={"submit"}>
+                                    {registerPasswordError &&
+                                        <Form.Text className={"text-danger error-text"}>{registerPasswordError}</Form.Text>}
+                                    <Button className={"formButton"} variant={"primary"} type={"submit"}>
                                         Register
                                     </Button>
                                 </Form>

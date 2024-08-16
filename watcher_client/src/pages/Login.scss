@@ -1,9 +1,21 @@
-.login-row {
-  .login-col {
-    .login-tabs {
-      width: 100%;
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
 
-      li {
+  .login-row {
+    width: 100%;
+
+    .login-col {
+      .error-text {
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+
+      .formButton {
+        display: block;
+        margin: 0 auto;
         width: 50%;
       }
     }
