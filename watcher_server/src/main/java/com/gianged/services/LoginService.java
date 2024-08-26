@@ -7,6 +7,7 @@ import com.gianged.models.RoleEnum;
 import com.gianged.models.User;
 import com.gianged.repositories.LoginRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,10 @@ public class LoginService {
         } else {
             throw new RuntimeException("Invalid credentials.");
         }
+    }
+
+    public void logoutUser() {
+        SecurityContextHolder.clearContext();
     }
 
     public LoginDto registerUser(String username, String password) {

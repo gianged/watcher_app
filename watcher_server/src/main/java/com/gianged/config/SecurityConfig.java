@@ -1,5 +1,6 @@
 package com.gianged.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,7 +34,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("watcher/auth/**").permitAll()
                         .anyRequest().authenticated())
-                .httpBasic(withDefaults());
+                .formLogin(withDefaults())
+                .httpBasic(withDefaults())
+                .logout(auth -> auth
+                        .logoutUrl("/watcher/auth/logout")
+                        .logoutSuccessHandler(((_, response, _) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                        }))
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID"));
 
         return http.build();
     }

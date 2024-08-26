@@ -19,7 +19,7 @@ public class LoginController {
 
     @GetMapping("/test")
     public ResponseEntity<String> test() {
-        return ResponseEntity.ok("Hello, This is Watcher app!");
+        return ResponseEntity.ok("Hello, This is Watcher authentication route!");
     }
 
     @PostMapping("/login")
@@ -30,6 +30,12 @@ public class LoginController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        loginService.logoutUser();
+        return ResponseEntity.ok("User logged out successfully!");
     }
 
     @PostMapping("/register")
