@@ -1,6 +1,8 @@
 package com.gianged.services;
 
 import com.gianged.dto.LoginDto;
+import com.gianged.exception.InvalidCredentialsException;
+import com.gianged.exception.UserNotFoundException;
 import com.gianged.mappers.UserMapper;
 import com.gianged.models.Role;
 import com.gianged.models.RoleEnum;
@@ -26,18 +28,33 @@ public class LoginService {
 
     public LoginDto loginUser(String username, String password) {
         User user = loginRepository.findByUsername(username).orElseThrow(()
-                -> new RuntimeException("User not found"));
-        if (passwordEncoder.matches(password, user.getPassword())) {
-            return userMapper.userToLoginDto(user);
-        } else {
-            throw new RuntimeException("Invalid credentials.");
+                -> new UserNotFoundException("User not found: " + username));
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new InvalidCredentialsException("Invalid credentials " + username);
         }
+
+        return userMapper.userToLoginDto(user);
     }
 
+    /**
+     * Logs out the currently authenticated user.
+     * <p>
+     * This method clears the security context of the current thread, effectively logging out the user.
+     * After calling this method, the user will no longer be considered authenticated, and later requests
+     * will require re-authentication.
+     */
     public void logoutUser() {
         SecurityContextHolder.clearContext();
     }
 
+    /**
+     * Registers a new user with the specified username and password.
+     *
+     * @param username The username of the user to be registered.
+     * @param password The password of the user to be registered.
+     * @return The LoginDto object representing the registered user.
+     * @throws RuntimeException If the provided username is already taken.
+     */
     public LoginDto registerUser(String username, String password) {
         if (loginRepository.findByUsername(username).isPresent()) {
             throw new RuntimeException("Username already taken.");

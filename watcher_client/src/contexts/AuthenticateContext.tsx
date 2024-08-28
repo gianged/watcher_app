@@ -1,7 +1,6 @@
 import React, { createContext, ReactNode, useState } from "react";
 import axios from "axios";
 import { useCookies } from "react-cookie";
-import { Simulate } from "react-dom/test-utils";
 
 interface AuthenticateType {
     userId: number,
@@ -29,18 +28,24 @@ export const AuthenticateProvider: React.FC<ReactNode> = (children) => {
 
     const login = async (username: string, password: string) => {
         try {
-            const response = await axios.post(
-                `http://localhost:8081/watcher/auth/login?username=${username}&password=${password}`
-            );
-            if (response.status === 200) {
-                setUserId(response.data.userId);
-                setUsername(response.data.username);
-                setRole(response.data.role);
-                setUserCookie('user', {
-                    userId: userId,
-                    role: role,
-                    username: username
-                });
+            if (userCookie.user && Object.keys(userCookie.user).length > 0) {
+                setUserId(userCookie.user['userId']);
+                setUsername(userCookie.user['username']);
+                setRole(userCookie.user['role']);
+            } else {
+                const response = await axios.post(
+                    `http://localhost:8081/watcher/auth/login?username=${username}&password=${password}`
+                );
+                if (response.status === 200) {
+                    setUserId(response.data.userId);
+                    setUsername(response.data.username);
+                    setRole(response.data.role);
+                    setUserCookie('user', {
+                        userId: userId,
+                        role: role,
+                        username: username
+                    });
+                }
             }
         } catch (e) {
             console.error(e);

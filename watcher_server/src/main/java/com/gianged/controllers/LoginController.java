@@ -24,12 +24,8 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginDto> login(@RequestParam String username, @RequestParam String password) {
-        try {
-            LoginDto loginDto = loginService.loginUser(username, password);
-            return ResponseEntity.ok(loginDto);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        LoginDto loginDto = loginService.loginUser(username, password);
+        return ResponseEntity.ok(loginDto);
     }
 
     @PostMapping("/logout")
@@ -40,11 +36,7 @@ public class LoginController {
 
     @PostMapping("/register")
     public ResponseEntity<LoginDto> register(@RequestParam String username, @RequestParam String password) {
-        try {
-            LoginDto loginDto = loginService.registerUser(username, password);
-            return ResponseEntity.status(HttpStatus.CREATED).body(loginDto);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        LoginDto loginDto = loginService.registerUser(username, password);
+        return ResponseEntity.status(HttpStatus.CREATED).body(loginDto);
     }
 }
