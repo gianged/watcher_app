@@ -1,10 +1,25 @@
 import "./Login.scss"
-import React, { useState } from "react";
-import { Button, Col, Container, Form, Row, Tab, Tabs } from "react-bootstrap";
+import React, { FormEvent, useContext, useState } from "react";
+import { Alert, Button, Col, Container, Form, Row, Tab, Tabs } from "react-bootstrap";
+import { AuthenticateContext } from "../contexts/AuthenticateContext.tsx";
 
 export const Login = (): React.ReactElement => {
 
+    //region Login
+
+    const {login, loginError} = useContext(AuthenticateContext);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = async (e: FormEvent) => {
+        e.preventDefault();
+        await login(username, password);
+    }
+
+    //endregion
+
     //region Register
+
     const [registerPassword, setRegisterPassword] = useState<string>('');
     const [registerConfirmPassword, setRegisterConfirmPassword] = useState<string>('');
     const [registerPasswordError, setRegisterPasswordError] = useState<string>('');
@@ -38,14 +53,19 @@ export const Login = (): React.ReactElement => {
                     <Col className={"col-md-4 login-col"}>
                         <Tabs defaultActiveKey={"login"} id={"login-tabs"} className={"mb-3 login-tabs"} fill>
                             <Tab eventKey={"login"} title={"Login"}>
-                                <Form>
+                                {loginError && <Alert variant={"danger"}>{loginError}</Alert>}
+                                <Form onSubmit={handleLogin}>
                                     <Form.Group className={"mb-3"}>
                                         <Form.Label column={"sm"}>Username</Form.Label>
-                                        <Form.Control type={"text"} placeholder={"Username"} />
+                                        <Form.Control type={"text"} placeholder={"Username"}
+                                                      value={username}
+                                                      onChange={(e) => setUsername(e.target.value)} />
                                     </Form.Group>
                                     <Form.Group className={"mb-3"}>
                                         <Form.Label column={"sm"}>Password</Form.Label>
-                                        <Form.Control type={"password"} placeholder={"Password"} />
+                                        <Form.Control type={"password"} placeholder={"Password"}
+                                                      value={password}
+                                                      onChange={(e) => setPassword(e.target.value)} />
                                     </Form.Group>
                                     <Button className={"formButton"} variant={"primary"} type={"submit"}>
                                         Login
@@ -73,7 +93,8 @@ export const Login = (): React.ReactElement => {
                                                       placeholder={"Confirm Password"} />
                                     </Form.Group>
                                     {registerPasswordError &&
-                                        <Form.Text className={"text-danger error-text"}>{registerPasswordError}</Form.Text>}
+                                        <Form.Text
+                                            className={"text-danger error-text"}>{registerPasswordError}</Form.Text>}
                                     <Button className={"formButton"} variant={"primary"} type={"submit"}>
                                         Register
                                     </Button>

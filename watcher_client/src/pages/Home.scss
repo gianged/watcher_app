@@ -1,1 +1,56 @@
+.home-container {
+  overflow-x: hidden;
+
+  .top-navbar {
+    background-color: lightgray;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .avatar-image {
+      border: 2px solid aliceblue;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+    }
+
+    .dropdown-toggle:hover .avatar-image {
+      border-color: cornflowerblue;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      right: 0;
+      left: auto;
+      max-width: 150px;
+      width: max-content;
+
+      .dropdown-toggle::after {
+        display: none;
+      }
+    }
+  }
+
+  .sidebar {
+    background-color: lightgray;
+    position: relative;
+    padding: 20px;
+    height: 100vh;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+
+    .nav-pills {
+      .nav-link {
+        color: dimgray;
+        margin-bottom: 10px;
+        border-radius: 5px;
+
+        &:hover {
+          background-color: lightgray;
+        }
+
+        &.active {
+          background-color: gray;
+          color: white;
+        }
+      }
+    }
+  }
+}
 
