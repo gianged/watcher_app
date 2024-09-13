@@ -1,10 +1,13 @@
 package com.watcher.controllers;
 
 import com.watcher.dto.RoleDto;
+import com.watcher.exceptions.RoleDeleteNotAllowedException;
 import com.watcher.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +50,11 @@ public class RoleController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRole(@PathVariable Integer id) {
-        roleService.deleteRole(id);
-        return ResponseEntity.noContent().build();
+        try {
+            roleService.deleteRole(id);
+            return ResponseEntity.noContent().build();
+        } catch (RoleDeleteNotAllowedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        }
     }
 }

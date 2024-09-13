@@ -1,4 +1,4 @@
-package com.watcher.exception;
+package com.watcher.exceptions;
 
 import com.watcher.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;

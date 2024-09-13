@@ -1,8 +1,8 @@
 package com.watcher.services;
 
 import com.watcher.dto.AuthenticateDto;
-import com.watcher.exception.InvalidCredentialsException;
-import com.watcher.exception.UserNotFoundException;
+import com.watcher.exceptions.InvalidCredentialsException;
+import com.watcher.exceptions.UserNotFoundException;
 import com.watcher.mappers.UserMapper;
 import com.watcher.models.Role;
 import com.watcher.models.RoleEnum;

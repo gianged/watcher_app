@@ -1,4 +1,4 @@
-package com.watcher.exception;
+package com.watcher.exceptions;
 
 public class InvalidCredentialsException extends RuntimeException {
     public InvalidCredentialsException(String message) {

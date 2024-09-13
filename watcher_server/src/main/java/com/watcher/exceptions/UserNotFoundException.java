@@ -1,4 +1,4 @@
-package com.watcher.exception;
+package com.watcher.exceptions;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String message) {
