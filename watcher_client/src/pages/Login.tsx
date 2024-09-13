@@ -2,6 +2,8 @@ import "./Login.scss"
 import React, { FormEvent, useContext, useState } from "react";
 import { Alert, Button, Col, Container, Form, Row, Tab, Tabs } from "react-bootstrap";
 import { AuthenticateContext } from "../contexts/AuthenticateContext.tsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSignInAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 
 export const Login = (): React.ReactElement => {
 
@@ -52,7 +54,12 @@ export const Login = (): React.ReactElement => {
                 <Row className={"justify-content-center login-row"}>
                     <Col className={"col-md-4 login-col"}>
                         <Tabs defaultActiveKey={"login"} id={"login-tabs"} className={"mb-3 login-tabs"} fill>
-                            <Tab eventKey={"login"} title={"Login"}>
+                            <Tab eventKey={"login"} title={
+                                <>
+                                    <FontAwesomeIcon icon={faSignInAlt} className={"me-2"} />
+                                    Login
+                                </>
+                            }>
                                 {loginError && <Alert variant={"danger"}>{loginError}</Alert>}
                                 <Form onSubmit={handleLogin}>
                                     <Form.Group className={"mb-3"}>
@@ -72,7 +79,12 @@ export const Login = (): React.ReactElement => {
                                     </Button>
                                 </Form>
                             </Tab>
-                            <Tab eventKey={"register"} title={"Register"}>
+                            <Tab eventKey={"register"} title={
+                                <>
+                                    <FontAwesomeIcon icon={faUserPlus} className={"me-2"} />
+                                    Register
+                                </>
+                            }>
                                 <Form>
                                     <Form.Group className={"mb-3"}>
                                         <Form.Label column={"sm"}>Username</Form.Label>

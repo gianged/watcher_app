@@ -2,6 +2,8 @@ package com.watcher.models;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
 import java.util.LinkedHashSet;
@@ -22,32 +24,31 @@ public class User {
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "department_id")
     private Department department;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @Column(name = "isActive")
+    @Column(name = "is_active")
     private Boolean isActive;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "createAt", nullable = false)
+    @Column(name = "create_at", nullable = false)
     private Instant createAt;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "updateAt", nullable = false)
+    @Column(name = "update_at", nullable = false)
     private Instant updateAt;
 
     @OneToMany(mappedBy = "user")
-    private Set<Notification> notifications = new LinkedHashSet<>();
+    private Set<Announce> announces = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user")
     private Set<Ticket> tickets = new LinkedHashSet<>();
-
-    @OneToOne(mappedBy = "user")
-    private UserDetail userDetail;
 
     public Integer getId() {
         return id;
@@ -113,12 +114,12 @@ public class User {
         this.updateAt = updateAt;
     }
 
-    public Set<Notification> getNotifications() {
-        return notifications;
+    public Set<Announce> getAnnounces() {
+        return announces;
     }
 
-    public void setNotifications(Set<Notification> notifications) {
-        this.notifications = notifications;
+    public void setAnnounces(Set<Announce> announces) {
+        this.announces = announces;
     }
 
     public Set<Ticket> getTickets() {
@@ -127,13 +128,5 @@ public class User {
 
     public void setTickets(Set<Ticket> tickets) {
         this.tickets = tickets;
-    }
-
-    public UserDetail getUserDetail() {
-        return userDetail;
-    }
-
-    public void setUserDetail(UserDetail userDetail) {
-        this.userDetail = userDetail;
     }
 }

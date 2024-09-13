@@ -8,35 +8,38 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.time.Instant;
 
 @Entity
-@Table(name = "tickets")
-public class Ticket {
+@Table(name = "announces")
+public class Announce {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ticket_id", nullable = false)
+    @Column(name = "announce_id", nullable = false)
     private Integer id;
+
+    @Lob
+    @Column(name = "content")
+    private String content;
+
+    @Column(name = "start_date")
+    private Instant startDate;
+
+    @Column(name = "end_date")
+    private Instant endDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Lob
-    @Column(name = "content")
-    private String content;
-
-    @Column(name = "is_solved")
-    private Boolean isSolved;
-
-    @Column(name = "is_active")
-    private Boolean isActive;
-
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "create_at", nullable = false)
+    @Column(name = "create_at")
     private Instant createAt;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "update_at", nullable = false)
+    @Column(name = "update_at")
     private Instant updateAt;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
 
     public Integer getId() {
         return id;
@@ -44,14 +47,6 @@ public class Ticket {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public String getContent() {
@@ -62,20 +57,28 @@ public class Ticket {
         this.content = content;
     }
 
-    public Boolean getIsSolved() {
-        return isSolved;
+    public Instant getStartDate() {
+        return startDate;
     }
 
-    public void setIsSolved(Boolean isSolved) {
-        this.isSolved = isSolved;
+    public void setStartDate(Instant startDate) {
+        this.startDate = startDate;
     }
 
-    public Boolean getIsActive() {
-        return isActive;
+    public Instant getEndDate() {
+        return endDate;
     }
 
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
+    public void setEndDate(Instant endDate) {
+        this.endDate = endDate;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Instant getCreateAt() {
@@ -92,5 +95,13 @@ public class Ticket {
 
     public void setUpdateAt(Instant updateAt) {
         this.updateAt = updateAt;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 }

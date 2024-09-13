@@ -2,6 +2,8 @@ import React from "react";
 import "./Home.scss"
 import { Container, Image, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link, Outlet } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHome, faSignOutAlt, faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
 
 export const Home = (): React.ReactElement => {
     return (
@@ -22,9 +24,15 @@ export const Home = (): React.ReactElement => {
                                 }
                                              id={"basic-nav-dropdown"}
                                              align={"end"}>
-                                    <NavDropdown.Item as={Link} to={"/home"}>Profile</NavDropdown.Item>
+                                    <NavDropdown.Item as={Link} to={"/home"}>
+                                        <FontAwesomeIcon icon={faUser} className={"me-2"} />
+                                        Profile
+                                    </NavDropdown.Item>
                                     <NavDropdown.Divider />
-                                    <NavDropdown.Item as={Link} to={"/home"}>Logout</NavDropdown.Item>
+                                    <NavDropdown.Item as={Link} to={"/home"}>
+                                        <FontAwesomeIcon icon={faSignOutAlt} className={"me-2"} />
+                                        Logout
+                                    </NavDropdown.Item>
                                 </NavDropdown>
                             </Nav>
                         </Navbar.Collapse>
@@ -35,8 +43,14 @@ export const Home = (): React.ReactElement => {
                     <div className={"sidebar"}>
                         <Nav id={"basic-sidebar-nav"} defaultActiveKey={"/home"} variant={"pills"}
                              className={"flex-column"}>
-                            <Nav.Link as={Link} to={"/home"} active={true}>Home</Nav.Link>
-                            <Nav.Link as={Link} to={"/home"}>User Manage</Nav.Link>
+                            <Nav.Link as={Link} to={"/manage"} active={true}>
+                                <FontAwesomeIcon icon={faHome} className={"me-2"} />
+                                Home
+                            </Nav.Link>
+                            <Nav.Link as={Link} to={"/home"}>
+                                <FontAwesomeIcon icon={faUsers} className={"me-2"} />
+                                User Manage
+                            </Nav.Link>
                             <Nav.Link as={Link} to={"/home"}>Home 3</Nav.Link>
                             <Nav.Link as={Link} to={"/home"}>Home 4</Nav.Link>
                             <Nav.Link as={Link} to={"/home"}>Home 5</Nav.Link>

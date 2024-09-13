@@ -20,11 +20,11 @@ public class Department {
     private String departmentName;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "createAt", nullable = false)
+    @Column(name = "create_at", nullable = false)
     private Instant createAt;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "updateAt", nullable = false)
+    @Column(name = "update_at", nullable = false)
     private Instant updateAt;
 
     @OneToMany(mappedBy = "department")

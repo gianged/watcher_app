@@ -1,27 +1,27 @@
 package com.watcher.services;
 
-import com.watcher.dto.LoginDto;
+import com.watcher.dto.AuthenticateDto;
 import com.watcher.exception.InvalidCredentialsException;
 import com.watcher.exception.UserNotFoundException;
 import com.watcher.mappers.UserMapper;
 import com.watcher.models.Role;
 import com.watcher.models.RoleEnum;
 import com.watcher.models.User;
-import com.watcher.repositories.LoginRepository;
+import com.watcher.repositories.AuthenticateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LoginService {
-    private final LoginRepository loginRepository;
+public class AuthenticateService {
+    private final AuthenticateRepository authenticateRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public LoginService(LoginRepository loginRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
-        this.loginRepository = loginRepository;
+    public AuthenticateService(AuthenticateRepository authenticateRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
+        this.authenticateRepository = authenticateRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }
@@ -32,17 +32,17 @@ public class LoginService {
      * @param username The username of the user trying to log in.
      * @param password The password of the user trying to log in.
      * @return A LoginDto object containing user information upon successful authentication.
-     * @throws UserNotFoundException If no user is found with the provided username.
+     * @throws UserNotFoundException       If no user is found with the provided username.
      * @throws InvalidCredentialsException If the provided password does not match the stored password for the user.
      */
-    public LoginDto loginUser(String username, String password) {
-        User user = loginRepository.findByUsername(username).orElseThrow(()
+    public AuthenticateDto loginUser(String username, String password) {
+        User user = authenticateRepository.findByUsername(username).orElseThrow(()
                 -> new UserNotFoundException("User not found: " + username));
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new InvalidCredentialsException("Invalid credentials " + username);
         }
 
-        return userMapper.userToLoginDto(user);
+        return userMapper.toAuthenticateDto(user);
     }
 
     /**
@@ -64,8 +64,8 @@ public class LoginService {
      * @return The LoginDto object representing the registered user.
      * @throws RuntimeException If the provided username is already taken.
      */
-    public LoginDto registerUser(String username, String password) {
-        if (loginRepository.findByUsername(username).isPresent()) {
+    public AuthenticateDto registerUser(String username, String password) {
+        if (authenticateRepository.findByUsername(username).isPresent()) {
             throw new RuntimeException("Username already taken.");
         }
 
@@ -78,8 +78,8 @@ public class LoginService {
         memberRole.setRoleName(RoleEnum.MEMBER.getRoleName());
 
         newUser.setRole(memberRole);
-        User savedUser = loginRepository.save(newUser);
+        User savedUser = authenticateRepository.save(newUser);
 
-        return userMapper.userToLoginDto(savedUser);
+        return userMapper.toAuthenticateDto(savedUser);
     }
 }
