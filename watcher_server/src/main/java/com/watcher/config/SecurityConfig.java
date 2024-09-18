@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,19 +31,20 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(withDefaults())
-                .csrf((CsrfConfigurer::disable))
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("watcher/auth/**").permitAll()
+                        .requestMatchers("/watcher/manage/**").hasAnyRole("SYSTEM_ADMIN", "DIRECTOR")
                         .anyRequest().authenticated())
-                .formLogin(withDefaults())
-                .httpBasic(withDefaults())
-                .logout(auth -> auth
-                        .logoutUrl("/watcher/auth/logout")
-                        .logoutSuccessHandler(((_, response, _) -> {
-                            response.setStatus(HttpServletResponse.SC_OK);
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((_, response, _) -> {
+                            response.setContentType("application/json");
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getOutputStream().print("{\"error\": \"Unauthorized\"}");
                         }))
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID"));
+                .formLogin(withDefaults())
+                .logout(withDefaults())
+                .httpBasic(withDefaults());
 
         return http.build();
     }

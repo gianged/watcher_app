@@ -28,10 +28,8 @@ public class User {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "role_id")
-    private Role role;
+    @Column(name = "role_level")
+    private Integer roleLevel;
 
     @Column(name = "is_active")
     private Boolean isActive;
@@ -82,12 +80,12 @@ public class User {
         this.department = department;
     }
 
-    public Role getRole() {
-        return role;
+    public Integer getRoleLevel() {
+        return roleLevel;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setRoleLevel(Integer roleLevel) {
+        this.roleLevel = roleLevel;
     }
 
     public Boolean getIsActive() {

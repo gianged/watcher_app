@@ -1,10 +1,10 @@
 package com.watcher.models;
 
 public enum RoleEnum {
-    MEMBER(1, "user"),
-    MANAGER(2, "Manager"),
-    DIRECTOR(3, "Director"),
-    SYSTEM_ADMIN(4, "System Admin");
+    SYSTEM_ADMIN(1, "System Admin"),
+    DIRECTOR(2, "Director"),
+    MANAGER(3, "Manager"),
+    USER(4, "User");
 
     private final int id;
     private final String roleName;

@@ -24,8 +24,8 @@ public class Ticket {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "is_solved")
-    private Boolean isSolved;
+    @Column(name = "status")
+    private Integer status;
 
     @Column(name = "is_active")
     private Boolean isActive;
@@ -62,12 +62,12 @@ public class Ticket {
         this.content = content;
     }
 
-    public Boolean getIsSolved() {
-        return isSolved;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setIsSolved(Boolean isSolved) {
-        this.isSolved = isSolved;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public Boolean getIsActive() {

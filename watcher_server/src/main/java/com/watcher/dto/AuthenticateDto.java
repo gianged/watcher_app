@@ -9,6 +9,6 @@ public record AuthenticateDto(Integer id,
                               String username,
                               String password,
                               Integer departmentId,
-                              Integer roleId,
+                              Integer roleLevel,
                               Boolean isActive) implements Serializable {
 }

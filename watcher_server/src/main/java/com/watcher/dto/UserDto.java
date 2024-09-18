@@ -8,8 +8,8 @@ import java.time.Instant;
  */
 public record UserDto(Integer id,
                       String username,
+                      Integer roleLevel,
                       Integer departmentId,
-                      Integer roleId,
                       Boolean isActive,
                       Instant createAt,
                       Instant updateAt) implements Serializable {

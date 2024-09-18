@@ -12,10 +12,8 @@ import org.mapstruct.*;
 public interface UserMapper {
 
     @Mapping(source = "departmentId", target = "department.id")
-    @Mapping(source = "roleId", target = "role.id")
     User toEntityFromUserDto(UserDto userDto);
 
-    @Mapping(source = "roleId", target = "role.id")
     @Mapping(source = "departmentId", target = "department.id")
     User toEntityFromAuthenticateDto(AuthenticateDto authenticateDto);
 

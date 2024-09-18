@@ -9,7 +9,7 @@ import java.time.Instant;
 public record TicketDto(Integer id,
                         Integer userId,
                         String content,
-                        Boolean isSolved,
+                        Integer status,
                         Boolean isActive,
                         Instant createAt,
                         Instant updateAt) implements Serializable {

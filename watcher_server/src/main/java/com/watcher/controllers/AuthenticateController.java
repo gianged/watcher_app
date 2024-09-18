@@ -1,7 +1,6 @@
 package com.watcher.controllers;
 
 import com.watcher.dto.AuthenticateDto;
-import com.watcher.dto.UserDto;
 import com.watcher.services.AuthenticateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
