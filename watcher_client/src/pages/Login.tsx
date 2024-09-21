@@ -1,7 +1,7 @@
 import "./Login.scss"
 import React, { FormEvent, useContext, useState } from "react";
 import { Alert, Button, Col, Container, Form, Row, Tab, Tabs } from "react-bootstrap";
-import { AuthenticateContext } from "../contexts/AuthenticateContext.tsx";
+import { AuthenticateContext } from "../providers/AuthenticateProvider.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 

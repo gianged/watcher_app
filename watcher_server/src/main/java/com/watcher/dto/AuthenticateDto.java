@@ -8,6 +8,7 @@ import java.io.Serializable;
 public record AuthenticateDto(Integer id,
                               String username,
                               String password,
+                              String profilePictureBase64,
                               Integer departmentId,
                               Integer roleLevel,
                               Boolean isActive) implements Serializable {

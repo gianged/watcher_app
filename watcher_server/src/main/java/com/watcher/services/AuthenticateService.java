@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -36,6 +37,11 @@ public class AuthenticateService {
                 -> new UserNotFoundException("User not found: " + username));
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new InvalidCredentialsException("Invalid credentials " + username);
+        }
+
+        if (user.getProfilePicture() != null) {
+            String url = "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(user.getProfilePicture());
+            user.setProfilePictureBase64(url);
         }
 
         RoleEnum role = Arrays.stream(RoleEnum.values())

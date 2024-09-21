@@ -23,6 +23,12 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "profile_picture")
+    private byte[] profilePicture;
+
+    @Transient
+    private String profilePictureBase64;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "department_id")
@@ -70,6 +76,22 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public byte[] getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(byte[] profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    public String getProfilePictureBase64() {
+        return profilePictureBase64;
+    }
+
+    public void setProfilePictureBase64(String profilePictureBase64) {
+        this.profilePictureBase64 = profilePictureBase64;
     }
 
     public Department getDepartment() {
