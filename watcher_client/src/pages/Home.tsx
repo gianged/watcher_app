@@ -1,9 +1,9 @@
+import { faBell, faHome, faSignOutAlt, faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import "./Home.scss"
 import { Container, Image, Nav, Navbar, NavDropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Link, Outlet } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faHome, faSignOutAlt, faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
 
 export const Home = (): React.ReactElement => {
     const newTicketCount = 5; // changing it soon
@@ -29,7 +29,7 @@ export const Home = (): React.ReactElement => {
                                     </OverlayTrigger>
                                 </Nav.Link>
                                 <NavDropdown title={
-                                    <Image src={"/"}
+                                    <Image src={"/default_pfp.png"}
                                            roundedCircle
                                            width={"30"}
                                            height={"30"}

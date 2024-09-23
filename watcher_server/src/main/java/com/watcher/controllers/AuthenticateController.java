@@ -39,4 +39,13 @@ public class AuthenticateController {
         AuthenticateDto authenticateDto = authenticateService.registerUser(username, password);
         return ResponseEntity.status(HttpStatus.CREATED).body(authenticateDto);
     }
+
+    @GetMapping("/check-username")
+    public ResponseEntity<String> checkUsername(@RequestParam String input) {
+        if (!authenticateService.usernameCheck(input)) {
+            return ResponseEntity.ok("Username available!");
+        }
+
+        return ResponseEntity.ok("Username already taken!");
+    }
 }

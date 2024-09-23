@@ -54,6 +54,7 @@ public class AuthenticateService {
     public void logoutUser() {
         SecurityContextHolder.clearContext();
     }
+
     public AuthenticateDto registerUser(@RequestParam String username, @RequestParam String password) {
         if (authenticateRepository.findByUsername(username).isPresent()) {
             throw new RuntimeException("Username already taken.");
@@ -67,5 +68,13 @@ public class AuthenticateService {
         User savedUser = authenticateRepository.save(newUser);
 
         return userMapper.toAuthenticateDto(savedUser);
+    }
+
+    public boolean usernameCheck(@RequestParam String input) {
+        if (input.length() > 3) {
+            return authenticateRepository.findByUsername(input).isPresent();
+        }
+
+        return true;
     }
 }

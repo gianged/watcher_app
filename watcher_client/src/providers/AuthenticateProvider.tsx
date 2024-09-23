@@ -1,36 +1,36 @@
-import React, { createContext, ReactNode, useState } from "react";
 import { AxiosError } from "axios";
+import React, { createContext, ReactNode, useState } from "react";
 import { useCookies } from "react-cookie";
-import authenticateApi from "../api/AuthenticateApi.ts";
 import { useNavigate } from "react-router-dom";
+import authenticateApi from "../api/AuthenticateApi.ts";
 
 interface AuthenticateType {
-    userId: number,
-    roleLevel: number,
-    username: string,
+    user?: object | null,
     login: (username: string, password: string) => Promise<boolean>,
     logout: () => Promise<void>,
     loginError: string
 }
 
-export const AuthenticateContext = createContext<AuthenticateType>({
-    userId: 0,
-    roleLevel: 0,
-    username: '',
+const AuthenticateContext = createContext<AuthenticateType>({
+    user: {
+        userId: 0,
+        username: '',
+        roleLevel: 0,
+        profilePicture: ''
+    },
     login: async () => {
         return new Promise((resolve) => {
             resolve(false);
         })
     },
+
     logout: async () => {
     },
     loginError: ''
 })
 
-export const AuthenticateProvider: React.FC<ReactNode> = (children) => {
-    const [userId, setUserId] = useState<number>(0);
-    const [roleLevel, setRoleLevel] = useState<number>(0);
-    const [username, setUsername] = useState<string>('');
+const AuthenticateProvider: React.FC<{ children: ReactNode }> = ({children}) => {
+    const [user, setUser] = useState<object | null>({});
     const [userCookie, setUserCookie, removeUserCookie] = useCookies(['user']);
     const [loginError, setLoginError] = useState<string>('');
 
@@ -38,22 +38,24 @@ export const AuthenticateProvider: React.FC<ReactNode> = (children) => {
         try {
             const navigate = useNavigate();
             if (userCookie.user && Object.keys(userCookie.user).length > 0) {
-                setUserId(userCookie.user['userId']);
-                setUsername(userCookie.user['username']);
-                setRoleLevel(userCookie.user['role']);
+                setUser({
+                    userId: userCookie.user.userId,
+                    username: userCookie.user.username,
+                    roleLevel: userCookie.user.roleLevel,
+                    profilePicture: userCookie.user.profilePicture
+                });
                 navigate("/manage");
                 return true;
             } else {
                 const response = await authenticateApi.login(username, password);
                 if (response.success) {
-                    setUserId(response.data.userId);
-                    setUsername(response.data.username);
-                    setRoleLevel(response.data.roleLevel);
-                    setUserCookie('user', {
-                        userId: userId,
-                        role: roleLevel,
-                        username: username
+                    setUser({
+                        id: response.data.userId,
+                        username: response.data.username,
+                        roleLevel: response.data.roleLevel,
+                        profilePicture: response.data.profilePicture
                     });
+                    setUserCookie('user', user);
                     navigate("/manage");
                     return true;
                 } else {
@@ -69,10 +71,10 @@ export const AuthenticateProvider: React.FC<ReactNode> = (children) => {
 
     const logout = async () => {
         try {
-            setUserId(0);
-            setRoleLevel(0);
-            setUsername('');
+            const navigate = useNavigate();
+            setUser(null);
             removeUserCookie('user');
+            navigate("/");
         } catch (e) {
             console.error(e);
         }
@@ -80,9 +82,7 @@ export const AuthenticateProvider: React.FC<ReactNode> = (children) => {
 
     return (
         <AuthenticateContext.Provider value={{
-            userId,
-            roleLevel,
-            username,
+            user,
             login,
             logout,
             loginError
@@ -91,3 +91,5 @@ export const AuthenticateProvider: React.FC<ReactNode> = (children) => {
         </AuthenticateContext.Provider>
     )
 }
+
+export { AuthenticateContext, AuthenticateProvider }
