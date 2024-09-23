@@ -39,11 +39,6 @@ public class AuthenticateService {
             throw new InvalidCredentialsException("Invalid credentials " + username);
         }
 
-        if (user.getProfilePicture() != null) {
-            String url = "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(user.getProfilePicture());
-            user.setProfilePictureBase64(url);
-        }
-
         RoleEnum role = Arrays.stream(RoleEnum.values())
                 .filter(a -> a.getId() == user.getRoleLevel())
                 .findFirst()
@@ -59,7 +54,6 @@ public class AuthenticateService {
     public void logoutUser() {
         SecurityContextHolder.clearContext();
     }
-
     public AuthenticateDto registerUser(@RequestParam String username, @RequestParam String password) {
         if (authenticateRepository.findByUsername(username).isPresent()) {
             throw new RuntimeException("Username already taken.");

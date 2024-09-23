@@ -4,6 +4,7 @@ import { Alert, Button, Col, Container, Form, Row, Tab, Tabs } from "react-boots
 import { AuthenticateContext } from "../providers/AuthenticateProvider.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import authenticateApi from "../api/AuthenticateApi.ts";
 
 export const Login = (): React.ReactElement => {
 
@@ -22,6 +23,7 @@ export const Login = (): React.ReactElement => {
 
     //region Register
 
+    const [registerUsername, setRegisterUsername] = useState<string>('');
     const [registerPassword, setRegisterPassword] = useState<string>('');
     const [registerConfirmPassword, setRegisterConfirmPassword] = useState<string>('');
     const [registerPasswordError, setRegisterPasswordError] = useState<string>('');
@@ -85,10 +87,19 @@ export const Login = (): React.ReactElement => {
                                     Register
                                 </>
                             }>
-                                <Form>
+                                <Form onSubmit={async (e: FormEvent) => {
+                                    e.preventDefault();
+                                    const response = await authenticateApi.register(registerUsername, registerPassword);
+                                    if (response.success) {
+                                        await login(registerUsername, registerPassword);
+                                    }
+                                }}>
                                     <Form.Group className={"mb-3"}>
                                         <Form.Label column={"sm"}>Username</Form.Label>
-                                        <Form.Control type={"text"} placeholder={"Username"} />
+                                        <Form.Control type={"text"}
+                                                      value={registerUsername}
+                                                      onChange={(e) => setRegisterUsername(e.target.value)}
+                                                      placeholder={"Username"} />
                                     </Form.Group>
                                     <Form.Group className={"mb-3"}>
                                         <Form.Label column={"sm"}>Password</Form.Label>

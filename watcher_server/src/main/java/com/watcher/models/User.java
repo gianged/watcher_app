@@ -6,6 +6,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
+import java.util.Base64;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -87,11 +88,20 @@ public class User {
     }
 
     public String getProfilePictureBase64() {
-        return profilePictureBase64;
+        if (this.profilePicture != null) {
+            return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(this.profilePicture);
+        }
+
+        return null;
     }
 
     public void setProfilePictureBase64(String profilePictureBase64) {
-        this.profilePictureBase64 = profilePictureBase64;
+        if (profilePictureBase64 != null && profilePictureBase64.startsWith("data:image/jpeg;base64")) {
+            String base64Image = profilePictureBase64.split(",")[1];
+            this.profilePicture = Base64.getDecoder().decode(base64Image);
+        } else {
+            this.profilePicture = null;
+        }
     }
 
     public Department getDepartment() {

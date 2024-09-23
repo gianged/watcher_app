@@ -1,10 +1,12 @@
 import React, { createContext, ReactNode, useState } from "react";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { useCookies } from "react-cookie";
+import authenticateApi from "../api/AuthenticateApi.ts";
+import { useNavigate } from "react-router-dom";
 
 interface AuthenticateType {
     userId: number,
-    role: string,
+    roleLevel: number,
     username: string,
     login: (username: string, password: string) => Promise<boolean>,
     logout: () => Promise<void>,
@@ -13,7 +15,7 @@ interface AuthenticateType {
 
 export const AuthenticateContext = createContext<AuthenticateType>({
     userId: 0,
-    role: 'Unauthorized',
+    roleLevel: 0,
     username: '',
     login: async () => {
         return new Promise((resolve) => {
@@ -27,41 +29,40 @@ export const AuthenticateContext = createContext<AuthenticateType>({
 
 export const AuthenticateProvider: React.FC<ReactNode> = (children) => {
     const [userId, setUserId] = useState<number>(0);
-    const [role, setRole] = useState<string>('Unauthorized');
+    const [roleLevel, setRoleLevel] = useState<number>(0);
     const [username, setUsername] = useState<string>('');
     const [userCookie, setUserCookie, removeUserCookie] = useCookies(['user']);
     const [loginError, setLoginError] = useState<string>('');
 
     const login = async (username: string, password: string) => {
         try {
+            const navigate = useNavigate();
             if (userCookie.user && Object.keys(userCookie.user).length > 0) {
                 setUserId(userCookie.user['userId']);
                 setUsername(userCookie.user['username']);
-                setRole(userCookie.user['role']);
+                setRoleLevel(userCookie.user['role']);
+                navigate("/manage");
                 return true;
             } else {
-                const response = await axios.post(
-                    `http://localhost:8081/watcher/auth/login?username=${username}&password=${password}`
-                );
-                if (response.status === 200) {
+                const response = await authenticateApi.login(username, password);
+                if (response.success) {
                     setUserId(response.data.userId);
                     setUsername(response.data.username);
-                    setRole(response.data.role);
+                    setRoleLevel(response.data.roleLevel);
                     setUserCookie('user', {
                         userId: userId,
-                        role: role,
+                        role: roleLevel,
                         username: username
                     });
-                    setLoginError('');
+                    navigate("/manage");
                     return true;
                 } else {
-                    setLoginError(response.data.message || 'Login failed');
+                    setLoginError(response.message)
                     return false;
                 }
             }
         } catch (e: AxiosError | any) {
-            console.error(e);
-            setLoginError(e.response?.data?.message || 'An error occurred during login');
+            console.error("Error: " + e.message);
             return false;
         }
     }
@@ -69,7 +70,7 @@ export const AuthenticateProvider: React.FC<ReactNode> = (children) => {
     const logout = async () => {
         try {
             setUserId(0);
-            setRole('Unauthorized');
+            setRoleLevel(0);
             setUsername('');
             removeUserCookie('user');
         } catch (e) {
@@ -80,7 +81,7 @@ export const AuthenticateProvider: React.FC<ReactNode> = (children) => {
     return (
         <AuthenticateContext.Provider value={{
             userId,
-            role,
+            roleLevel,
             username,
             login,
             logout,

@@ -1,11 +1,13 @@
 import React from "react";
 import "./Home.scss"
-import { Container, Image, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Container, Image, Nav, Navbar, NavDropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Link, Outlet } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faSignOutAlt, faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faBell, faHome, faSignOutAlt, faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
 
 export const Home = (): React.ReactElement => {
+    const newTicketCount = 5; // changing it soon
+
     return (
         <>
             <div className={"home-container"}>
@@ -14,6 +16,18 @@ export const Home = (): React.ReactElement => {
                         <Navbar.Toggle aria-controls={"basic-sidebar-nav"} />
                         <Navbar.Collapse id={"basic-navbar-nav"} className={"justify-content-end"}>
                             <Nav>
+                                <Nav.Link href={"#"}>
+                                    <OverlayTrigger
+                                        placement={"bottom"}
+                                        overlay={
+                                            <Tooltip>{`You have ${newTicketCount} new ticket${newTicketCount > 1 ? "s" : ""}`}</Tooltip>
+                                        }>
+                                        <div className="icon-wrapper">
+                                            <FontAwesomeIcon icon={faBell} className={"me-2"} />
+                                            {newTicketCount > 0 && <span className="icon-badge">{newTicketCount}</span>}
+                                        </div>
+                                    </OverlayTrigger>
+                                </Nav.Link>
                                 <NavDropdown title={
                                     <Image src={"/"}
                                            roundedCircle
