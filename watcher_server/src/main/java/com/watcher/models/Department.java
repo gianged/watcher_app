@@ -28,7 +28,7 @@ public class Department {
     private Instant updateAt;
 
     @OneToMany(mappedBy = "department")
-    private Set<User> users = new LinkedHashSet<>();
+    private Set<AppUser> appUsers = new LinkedHashSet<>();
 
     public Integer getId() {
         return id;
@@ -62,11 +62,11 @@ public class Department {
         this.updateAt = updateAt;
     }
 
-    public Set<User> getUsers() {
-        return users;
+    public Set<AppUser> getAppUsers() {
+        return appUsers;
     }
 
-    public void setUsers(Set<User> users) {
-        this.users = users;
+    public void setAppUsers(Set<AppUser> appUsers) {
+        this.appUsers = appUsers;
     }
 }

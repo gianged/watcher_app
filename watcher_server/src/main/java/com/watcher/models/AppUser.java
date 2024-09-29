@@ -11,24 +11,24 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "app_users")
+public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "app_user_id", nullable = false)
     private Integer id;
-
-    @Column(name = "username", nullable = false)
-    private String username;
-
-    @Column(name = "password")
-    private String password;
 
     @Column(name = "profile_picture")
     private byte[] profilePicture;
 
     @Transient
     private String profilePictureBase64;
+
+    @Column(name = "username", nullable = false)
+    private String username;
+
+    @Column(name = "password")
+    private String password;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
@@ -49,10 +49,10 @@ public class User {
     @Column(name = "update_at", nullable = false)
     private Instant updateAt;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "appUser")
     private Set<Announce> announces = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "appUser")
     private Set<Ticket> tickets = new LinkedHashSet<>();
 
     public Integer getId() {
@@ -61,22 +61,6 @@ public class User {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public byte[] getProfilePicture() {
@@ -102,6 +86,22 @@ public class User {
         } else {
             this.profilePicture = null;
         }
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Department getDepartment() {

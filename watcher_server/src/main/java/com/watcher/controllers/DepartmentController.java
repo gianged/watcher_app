@@ -12,7 +12,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/watcher/manage/departments")
-@PreAuthorize("hasAnyRole('SYSTEM_ADMIN', 'DIRECTOR', 'MANAGER')")
 public class DepartmentController {
 
     private final DepartmentService departmentService;

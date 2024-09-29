@@ -4,7 +4,7 @@ import com.watcher.dto.DepartmentDto;
 import com.watcher.models.Department;
 import org.mapstruct.*;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface DepartmentMapper {
 
     Department toEntityFromDepartmentDto(DepartmentDto departmentDto);

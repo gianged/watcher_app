@@ -1,14 +1,15 @@
 import "./Login.scss"
-import React, { FormEvent, useContext, useState } from "react";
-import { Alert, Button, Col, Container, Form, Row, Tab, Tabs } from "react-bootstrap";
-import { AuthenticateContext } from "../providers/AuthenticateProvider.tsx";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { faSignInAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { FormEvent, useCallback, useContext, useState } from "react";
+import { Alert, Button, Col, Container, Form, OverlayTrigger, Row, Tab, Tabs, Tooltip } from "react-bootstrap";
 import authenticateApi from "../api/AuthenticateApi.ts";
+import { AuthenticateContext } from "../providers/AuthenticateProvider.tsx";
 
 export const Login = (): React.ReactElement => {
 
-    //region Login
+    //region Login hooks
 
     const {login, loginError} = useContext(AuthenticateContext);
     const [username, setUsername] = useState('');
@@ -21,32 +22,37 @@ export const Login = (): React.ReactElement => {
 
     //endregion
 
-    //region Register
+    //region Register hooks
 
     const [registerUsername, setRegisterUsername] = useState<string>('');
     const [registerPassword, setRegisterPassword] = useState<string>('');
     const [registerConfirmPassword, setRegisterConfirmPassword] = useState<string>('');
-    const [registerPasswordError, setRegisterPasswordError] = useState<string>('');
+    const [registerError, setRegisterError] = useState<string | null>('');
 
-    const handleRegisterPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const input = event.target.value;
-        setRegisterPassword(input);
-        validatePassword(input, registerConfirmPassword);
-    }
-
-    const handleRegisterConfirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const input = event.target.value;
-        setRegisterConfirmPassword(input);
-        validatePassword(registerPassword, input);
-    }
-
-    const validatePassword = (password: string, confirmPassword: string) => {
-        if (password !== confirmPassword) {
-            setRegisterPasswordError('Passwords do not match');
-        } else {
-            setRegisterPasswordError('');
+    const validatePassword = useCallback(() => {
+        if (registerPassword !== registerConfirmPassword) {
+            setRegisterError('Passwords do not match');
+            return false;
         }
-    }
+        if (registerPassword.length < 8) {
+            setRegisterError('Password must be at least 8 characters long');
+            return false;
+        }
+        setRegisterError(null);
+        return true;
+    }, [registerPassword, registerConfirmPassword]);
+
+    const handleRegister = useCallback(async (e: FormEvent) => {
+        e.preventDefault();
+        if (validatePassword()) {
+            const response = await authenticateApi.register(registerUsername, registerPassword);
+            if (response.success) {
+                await login(registerUsername, registerPassword);
+            } else {
+                setRegisterError(response.message);
+            }
+        }
+    }, [validatePassword, registerUsername, registerPassword, login])
 
     //endregion
 
@@ -88,12 +94,9 @@ export const Login = (): React.ReactElement => {
                                 </>
                             }>
                                 <Form onSubmit={async (e: FormEvent) => {
-                                    e.preventDefault();
-                                    const response = await authenticateApi.register(registerUsername, registerPassword);
-                                    if (response.success) {
-                                        await login(registerUsername, registerPassword);
-                                    }
+                                    await handleRegister(e);
                                 }}>
+                                    {registerError && <Alert variant={"danger"}>{registerError}</Alert>}
                                     <Form.Group className={"mb-3"}>
                                         <Form.Label column={"sm"}>Username</Form.Label>
                                         <Form.Control type={"text"}
@@ -102,22 +105,27 @@ export const Login = (): React.ReactElement => {
                                                       placeholder={"Username"} />
                                     </Form.Group>
                                     <Form.Group className={"mb-3"}>
-                                        <Form.Label column={"sm"}>Password</Form.Label>
+                                        <Form.Label column={"sm"}>
+                                            Password
+                                            <OverlayTrigger placement={"right"} overlay={
+                                                <Tooltip id={"password-tooltip"}>Passwords must be at least 8 characters
+                                                    long</Tooltip>
+                                            }>
+                                                <FontAwesomeIcon icon={faQuestionCircle} className={"ms-2"} />
+                                            </OverlayTrigger>
+                                        </Form.Label>
                                         <Form.Control type={"password"}
                                                       value={registerPassword}
-                                                      onChange={handleRegisterPasswordChange}
+                                                      onChange={(e) => setRegisterPassword(e.target.value)}
                                                       placeholder={"Password"} />
                                     </Form.Group>
                                     <Form.Group className={"mb-3"}>
                                         <Form.Label column={"sm"}>Confirm Password</Form.Label>
                                         <Form.Control type={"password"}
                                                       value={registerConfirmPassword}
-                                                      onChange={handleRegisterConfirmPasswordChange}
+                                                      onChange={(e) => setRegisterConfirmPassword(e.target.value)}
                                                       placeholder={"Confirm Password"} />
                                     </Form.Group>
-                                    {registerPasswordError &&
-                                        <Form.Text
-                                            className={"text-danger error-text"}>{registerPasswordError}</Form.Text>}
                                     <Button className={"formButton"} variant={"primary"} type={"submit"}>
                                         Register
                                     </Button>

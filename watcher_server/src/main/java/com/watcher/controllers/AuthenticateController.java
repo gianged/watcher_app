@@ -30,6 +30,7 @@ public class AuthenticateController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
+
         authenticateService.logoutUser();
         return ResponseEntity.ok("User logged out successfully!");
     }
@@ -45,7 +46,6 @@ public class AuthenticateController {
         if (!authenticateService.usernameCheck(input)) {
             return ResponseEntity.ok("Username available!");
         }
-
         return ResponseEntity.ok("Username already taken!");
     }
 }

@@ -9,23 +9,40 @@ interface UserManageApiResponse<T> {
 }
 
 const UserManageApi = {
-    fillAll = async (): Promise<UserManageApiResponse<any>> => {
+    getAll: async (): Promise<UserManageApiResponse<any>> => {
         try {
             const response = await axios.get(
                 API_BASE_URL + "users/all"
             );
-            if (response.status === 200) {
-                return {
-                    success: true,
-                    message: "Users fetched successfully",
-                    data: response.data
-                }
+            return {
+                success: true,
+                message: "Users fetched successfully",
+                data: response.data
             }
         } catch (error) {
             console.error("Failed to fetch users:", error);
             return {
                 success: false,
                 message: "Failed to fetch users"
+            }
+        }
+    },
+
+    getById: async (id: string): Promise<UserManageApiResponse<any>> => {
+        try {
+            const response = await axios.get(
+                API_BASE_URL + "users/" + id
+            );
+            return {
+                success: true,
+                message: "User fetched successfully",
+                data: response.data
+            }
+        } catch (error) {
+            console.error("Failed to fetch user:", error);
+            return {
+                success: false,
+                message: "Failed to fetch user"
             }
         }
     }

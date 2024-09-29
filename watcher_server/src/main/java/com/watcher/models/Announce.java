@@ -27,8 +27,8 @@ public class Announce {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "app_user_id")
+    private AppUser appUser;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "create_at")
@@ -73,12 +73,12 @@ public class Announce {
         this.endDate = endDate;
     }
 
-    public User getUser() {
-        return user;
+    public AppUser getAppUser() {
+        return appUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setAppUser(AppUser appUser) {
+        this.appUser = appUser;
     }
 
     public Instant getCreateAt() {
