@@ -1,9 +1,8 @@
 package com.watcher.models;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 
 import java.time.Instant;
 
@@ -30,10 +29,12 @@ public class Announce {
     @JoinColumn(name = "app_user_id")
     private AppUser appUser;
 
+    @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "create_at")
+    @Column(name = "create_at", nullable = false, updatable = false)
     private Instant createAt;
 
+    @UpdateTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "update_at")
     private Instant updateAt;

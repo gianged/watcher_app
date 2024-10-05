@@ -2,8 +2,9 @@ import "./Login.scss"
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { faSignInAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { FormEvent, useCallback, useContext, useState } from "react";
+import React, { FormEvent, useCallback, useContext, useEffect, useState } from "react";
 import { Alert, Button, Col, Container, Form, OverlayTrigger, Row, Tab, Tabs, Tooltip } from "react-bootstrap";
+import AuthenticateApi from "../api/AuthenticateApi.ts";
 import authenticateApi from "../api/AuthenticateApi.ts";
 import { AuthenticateContext } from "../providers/AuthenticateProvider.tsx";
 
@@ -29,22 +30,25 @@ export const Login = (): React.ReactElement => {
     const [registerConfirmPassword, setRegisterConfirmPassword] = useState<string>('');
     const [registerError, setRegisterError] = useState<string | null>('');
 
-    const validatePassword = useCallback(() => {
-        if (registerPassword !== registerConfirmPassword) {
-            setRegisterError('Passwords do not match');
-            return false;
-        }
-        if (registerPassword.length < 8) {
-            setRegisterError('Password must be at least 8 characters long');
-            return false;
-        }
-        setRegisterError(null);
-        return true;
-    }, [registerPassword, registerConfirmPassword]);
+    useEffect(() => {
+        const timeoutId = setTimeout(async () => {
+            if (registerPassword !== registerConfirmPassword) {
+                setRegisterError('Password do not match');
+            } else if (registerPassword.length !== 0 && registerPassword.length < 8) {
+                setRegisterError('Password must be at least 8 characters long');
+            } else if (await AuthenticateApi.checkUsername(registerUsername)) {
+                setRegisterError('Username already exists');
+            } else {
+                setRegisterError(null);
+            }
+        }, 2000);
+
+        return () => clearTimeout(timeoutId);
+    }, [registerUsername, registerPassword, registerConfirmPassword]);
 
     const handleRegister = useCallback(async (e: FormEvent) => {
         e.preventDefault();
-        if (validatePassword()) {
+        if (!registerError) {
             const response = await authenticateApi.register(registerUsername, registerPassword);
             if (response.success) {
                 await login(registerUsername, registerPassword);
@@ -52,7 +56,7 @@ export const Login = (): React.ReactElement => {
                 setRegisterError(response.message);
             }
         }
-    }, [validatePassword, registerUsername, registerPassword, login])
+    }, [registerError, registerUsername, registerPassword, login])
 
     //endregion
 

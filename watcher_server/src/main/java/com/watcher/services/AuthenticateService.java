@@ -1,5 +1,6 @@
 package com.watcher.services;
 
+import com.watcher.dto.AppUserDto;
 import com.watcher.dto.AuthenticateDto;
 import com.watcher.exceptions.InvalidCredentialsException;
 import com.watcher.exceptions.UserNotFoundException;
@@ -43,11 +44,24 @@ public class AuthenticateService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Role not found for level: " + user.getRoleLevel()));
 
+        String auth = username + ":" + password;
+        String token = "Basic " + java.util.Base64.getEncoder().encodeToString(auth.getBytes());
+        AuthenticateDto dto = new AuthenticateDto(
+                user.getId(),
+                user.getProfilePicture(),
+                user.getUsername(),
+                user.getPassword(),
+                user.getDepartment() != null ? user.getDepartment().getId() : null,
+                user.getRoleLevel(),
+                user.getIsActive(),
+                token
+        );
+
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 username, password, List.of((new SimpleGrantedAuthority("ROLE_" + role.getRoleName()))));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-        return userMapper.toAuthenticateDto(user);
+        return dto;
     }
 
     public void logoutUser() {
@@ -73,7 +87,6 @@ public class AuthenticateService {
         if (!input.isBlank() || !input.isEmpty()) {
             return authenticateRepository.findByUsername(input).isPresent();
         }
-
         return true;
     }
 }

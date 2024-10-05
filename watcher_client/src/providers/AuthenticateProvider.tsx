@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import React, { createContext, ReactNode, useState } from "react";
+import React, { createContext, ReactNode, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import authenticateApi from "../api/AuthenticateApi.ts";
@@ -8,7 +8,8 @@ interface AuthenticateType {
     user?: object | null,
     login: (username: string, password: string) => Promise<boolean>,
     logout: () => Promise<void>,
-    loginError: string
+    loginError: string,
+    token?: string
 }
 
 const AuthenticateContext = createContext<AuthenticateType>({
@@ -16,7 +17,8 @@ const AuthenticateContext = createContext<AuthenticateType>({
         userId: 0,
         username: '',
         roleLevel: 0,
-        profilePicture: ''
+        profilePicture: '',
+        token: ''
     },
     login: async () => {
         return new Promise((resolve) => {
@@ -30,55 +32,56 @@ const AuthenticateContext = createContext<AuthenticateType>({
 })
 
 const AuthenticateProvider: React.FC<{ children: ReactNode }> = ({children}) => {
-    const [user, setUser] = useState<object | null>({});
+    const [user, setUser] = useState<object | null>(null);
     const [userCookie, setUserCookie, removeUserCookie] = useCookies(['user']);
     const [loginError, setLoginError] = useState<string>('');
+    const navigate = useNavigate();
 
     const login = async (username: string, password: string) => {
         try {
-            const navigate = useNavigate();
-            if (userCookie.user && Object.keys(userCookie.user).length > 0) {
+            if (userCookie) {
+                removeUserCookie('user');
+            }
+            const response = await authenticateApi.login(username, password);
+            if (response.success) {
                 setUser({
-                    userId: userCookie.user.userId,
-                    username: userCookie.user.username,
-                    roleLevel: userCookie.user.roleLevel,
-                    profilePicture: userCookie.user.profilePicture
+                    id: response.data.userId,
+                    username: response.data.username,
+                    roleLevel: response.data.roleLevel,
+                    profilePicture: response.data.profilePicture,
+                    token: response.data.token
                 });
-                navigate("/manage");
                 return true;
             } else {
-                const response = await authenticateApi.login(username, password);
-                if (response.success) {
-                    setUser({
-                        id: response.data.userId,
-                        username: response.data.username,
-                        roleLevel: response.data.roleLevel,
-                        profilePicture: response.data.profilePicture
-                    });
-                    setUserCookie('user', user);
-                    navigate("/manage");
-                    return true;
-                } else {
-                    setLoginError(response.message)
-                    return false;
-                }
+                setLoginError(response.message)
+                return false;
             }
-        } catch (e: AxiosError | any) {
+        } catch
+            (e: AxiosError | any) {
             console.error("Error: " + e.message);
             return false;
         }
-    }
+    };
 
     const logout = async () => {
         try {
-            const navigate = useNavigate();
-            setUser(null);
-            removeUserCookie('user');
-            navigate("/");
+            const response = await authenticateApi.logout();
+            if (response.success) {
+                setUser(null);
+                removeUserCookie('user');
+                navigate("/");
+            }
         } catch (e) {
             console.error(e);
         }
-    }
+    };
+
+    useEffect(() => {
+        if (user) {
+            setUserCookie('user', user);
+            navigate("/app");
+        }
+    }, [user]);
 
     return (
         <AuthenticateContext.Provider value={{

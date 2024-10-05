@@ -20,7 +20,7 @@ export const ErrorPage: React.FC = () => {
             }
         };
 
-        fetchErrorMessage();
+        fetchErrorMessage().then();
     }, []);
 
     return <ErrorComponent statusCode={statusCode} errorMessage={errorMessage} />;

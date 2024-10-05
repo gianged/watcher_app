@@ -1,12 +1,18 @@
-import { faBell, faHome, faSignOutAlt, faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faBell, faBuilding, faHome, faSignOutAlt, faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useContext } from "react";
 import "./Home.scss"
-import { Container, Image, Nav, Navbar, NavDropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Button, Container, Image, Modal, Nav, Navbar, NavDropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useCookies } from "react-cookie";
 import { Link, Outlet } from "react-router-dom";
+import { AuthenticateContext } from "../providers/AuthenticateProvider.tsx";
 
 export const Home = (): React.ReactElement => {
+    const [cookies] = useCookies(['user']);
+    const user = cookies.user;
     const newTicketCount = 5; // changing it soon
+    const [showLogoutModal, setShowLogoutModal] = React.useState(false);
+    const {logout} = useContext(AuthenticateContext);
 
     return (
         <>
@@ -43,7 +49,7 @@ export const Home = (): React.ReactElement => {
                                         Profile
                                     </NavDropdown.Item>
                                     <NavDropdown.Divider />
-                                    <NavDropdown.Item as={Link} to={"/home"}>
+                                    <NavDropdown.Item onClick={() => setShowLogoutModal(true)}>
                                         <FontAwesomeIcon icon={faSignOutAlt} className={"me-2"} />
                                         Logout
                                     </NavDropdown.Item>
@@ -57,15 +63,22 @@ export const Home = (): React.ReactElement => {
                     <div className={"sidebar"}>
                         <Nav id={"basic-sidebar-nav"} defaultActiveKey={"/home"} variant={"pills"}
                              className={"flex-column"}>
-                            <Nav.Link as={Link} to={"/manage"} active={true}>
+                            <Nav.Link as={Link} to={"/app"} active={true}>
                                 <FontAwesomeIcon icon={faHome} className={"me-2"} />
-                                Home
+                                Dashboard
                             </Nav.Link>
-                            <Nav.Link as={Link} to={"/home"}>
-                                <FontAwesomeIcon icon={faUsers} className={"me-2"} />
-                                User Manage
-                            </Nav.Link>
-                            <Nav.Link as={Link} to={"/home"}>Home 3</Nav.Link>
+                            {user?.roleLevel > 0 && user?.roleLevel <= 2 && (
+                                <>
+                                    <Nav.Link as={Link} to={"/app"}>
+                                        <FontAwesomeIcon icon={faUsers} className={"me-2"} />
+                                        User Manage
+                                    </Nav.Link>
+                                    <Nav.Link as={Link} to={"/app/departments"}>
+                                        <FontAwesomeIcon icon={faBuilding} className={"me-2"} />
+                                        Department Manage
+                                    </Nav.Link>
+                                </>
+                            )}
                             <Nav.Link as={Link} to={"/home"}>Home 4</Nav.Link>
                             <Nav.Link as={Link} to={"/home"}>Home 5</Nav.Link>
                         </Nav>
@@ -74,6 +87,23 @@ export const Home = (): React.ReactElement => {
                         <Outlet />
                     </Container>
                 </div>
+
+                <Modal show={showLogoutModal} onHide={() => setShowLogoutModal(false)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Going soon?</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Are you sure you want to logout</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant={"secondary"} onClick={() => setShowLogoutModal(false)}>
+                            Cancel
+                        </Button>
+                        <Button variant={"primary"} onClick={async () => {
+                            await logout();
+                        }}>
+                            Logout
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         </>
     )

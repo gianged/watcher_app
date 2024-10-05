@@ -6,13 +6,6 @@ import java.time.Instant;
 /**
  * DTO for {@link com.watcher.models.AppUser}
  */
-public record AppUserDto(Integer id,
-                         byte[] profilePicture,
-                         String username,
-                         String password,
-                         Integer departmentId,
-                         Integer roleLevel,
-                         Boolean isActive,
-                         Instant createAt,
-                         Instant updateAt) implements Serializable {
+public record AppUserDto(Integer id, String username, Integer departmentId, Integer roleLevel, Boolean isActive,
+                         Instant createAt, Instant updateAt) implements Serializable {
 }

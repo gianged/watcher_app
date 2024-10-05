@@ -1,12 +1,10 @@
 package com.watcher.models;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 
 import java.time.Instant;
-import java.util.Base64;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -19,10 +17,8 @@ public class AppUser {
     private Integer id;
 
     @Column(name = "profile_picture")
+    @Lob
     private byte[] profilePicture;
-
-    @Transient
-    private String profilePictureBase64;
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -41,10 +37,12 @@ public class AppUser {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "create_at", nullable = false)
+    @Column(name = "create_at", nullable = false, updatable = false)
     private Instant createAt;
 
+    @UpdateTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "update_at", nullable = false)
     private Instant updateAt;
@@ -69,23 +67,6 @@ public class AppUser {
 
     public void setProfilePicture(byte[] profilePicture) {
         this.profilePicture = profilePicture;
-    }
-
-    public String getProfilePictureBase64() {
-        if (this.profilePicture != null) {
-            return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(this.profilePicture);
-        }
-
-        return null;
-    }
-
-    public void setProfilePictureBase64(String profilePictureBase64) {
-        if (profilePictureBase64 != null && profilePictureBase64.startsWith("data:image/jpeg;base64")) {
-            String base64Image = profilePictureBase64.split(",")[1];
-            this.profilePicture = Base64.getDecoder().decode(base64Image);
-        } else {
-            this.profilePicture = null;
-        }
     }
 
     public String getUsername() {
