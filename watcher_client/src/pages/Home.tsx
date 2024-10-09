@@ -1,4 +1,13 @@
-import { faBell, faBuilding, faHome, faSignOutAlt, faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
+import {
+    faBell,
+    faBuilding,
+    faBullhorn,
+    faHome,
+    faSignOutAlt,
+    faTicketAlt,
+    faUser,
+    faUsers
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext } from "react";
 import "./Home.scss"
@@ -61,26 +70,39 @@ export const Home = (): React.ReactElement => {
 
                 <div className={"d-flex"}>
                     <div className={"sidebar"}>
-                        <Nav id={"basic-sidebar-nav"} defaultActiveKey={"/home"} variant={"pills"}
+                        <Nav id={"basic-sidebar-nav"} defaultActiveKey={"/app"} variant={"pills"}
                              className={"flex-column"}>
-                            <Nav.Link as={Link} to={"/app"} active={true}>
+                            <Nav.Link as={Link} to={"/app"} active={location.pathname === "/app"}>
                                 <FontAwesomeIcon icon={faHome} className={"me-2"} />
                                 Dashboard
                             </Nav.Link>
                             {user?.roleLevel > 0 && user?.roleLevel <= 2 && (
                                 <>
-                                    <Nav.Link as={Link} to={"/app"}>
+                                    <Nav.Link as={Link} to={"/app/users"} active={location.pathname === "/app/users"}>
                                         <FontAwesomeIcon icon={faUsers} className={"me-2"} />
                                         User Manage
                                     </Nav.Link>
-                                    <Nav.Link as={Link} to={"/app/departments"}>
+                                    <Nav.Link as={Link} to={"/app/departments"}
+                                              active={location.pathname === "/app/departments"}>
                                         <FontAwesomeIcon icon={faBuilding} className={"me-2"} />
                                         Department Manage
                                     </Nav.Link>
                                 </>
                             )}
-                            <Nav.Link as={Link} to={"/home"}>Home 4</Nav.Link>
-                            <Nav.Link as={Link} to={"/home"}>Home 5</Nav.Link>
+                            {user?.roleLevel > 0 && user?.roleLevel <= 3 && (
+                                <>
+                                    <Nav.Link as={Link} to={"/app/announces"}
+                                              active={location.pathname === "/app/announces"}>
+                                        <FontAwesomeIcon icon={faBullhorn} className={"me-2"} />
+                                        Announce Manage
+                                    </Nav.Link>
+                                    <Nav.Link as={Link} to={"/app/tickets"}
+                                              active={location.pathname === "/app/tickets"}>
+                                        <FontAwesomeIcon icon={faTicketAlt} className={"me-2"} />
+                                        Ticket Manage
+                                    </Nav.Link>
+                                </>
+                            )}
                         </Nav>
                     </div>
                     <Container>

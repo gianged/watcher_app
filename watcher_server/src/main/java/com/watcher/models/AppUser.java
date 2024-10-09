@@ -1,6 +1,7 @@
 package com.watcher.models;
 
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.*;
 
@@ -28,7 +29,7 @@ public class AppUser {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "department_id")
+    @JoinColumn(name = "department_id", nullable = true)
     private Department department;
 
     @Column(name = "role_level")
@@ -46,9 +47,6 @@ public class AppUser {
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "update_at", nullable = false)
     private Instant updateAt;
-
-    @OneToMany(mappedBy = "appUser")
-    private Set<Announce> announces = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "appUser")
     private Set<Ticket> tickets = new LinkedHashSet<>();
@@ -123,14 +121,6 @@ public class AppUser {
 
     public void setUpdateAt(Instant updateAt) {
         this.updateAt = updateAt;
-    }
-
-    public Set<Announce> getAnnounces() {
-        return announces;
-    }
-
-    public void setAnnounces(Set<Announce> announces) {
-        this.announces = announces;
     }
 
     public Set<Ticket> getTickets() {

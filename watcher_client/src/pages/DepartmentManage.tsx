@@ -1,9 +1,10 @@
-import { faEdit, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { Button, Form, Modal, Table } from "react-bootstrap";
-import DepartmentManageApi from "../api/DepartmentManageApi.tsx";
+import DepartmentManageApi from "../api/DepartmentManageApi.ts";
 import useAuthenticationHeader from "../providers/AuthenticateHeaderProvider.tsx";
+import "./DepartmentManage.scss";
 
 const DepartmentManage = (): React.ReactElement => {
     const authHeader = useAuthenticationHeader();
@@ -12,6 +13,8 @@ const DepartmentManage = (): React.ReactElement => {
     const [departmentName, setDepartmentName] = useState("");
     const [currentDepartmentId, setCurrentDepartmentId] = useState<string | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [departmentToDelete, setDepartmentToDelete] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchDepartments = async () => {
@@ -53,18 +56,44 @@ const DepartmentManage = (): React.ReactElement => {
         }
     };
 
+    const handleDeleteDepartment = async () => {
+        if (departmentToDelete) {
+            try {
+                const response = await DepartmentManageApi.delete(authHeader, departmentToDelete);
+                if (response.success) {
+                    setTableList(tableList.filter((item) => item.id !== departmentToDelete));
+                    setShowDeleteModal(false);
+                    setDepartmentToDelete(null);
+                } else {
+                    console.error("Failed to delete department:", response.message);
+                }
+            } catch (error) {
+                console.error("Failed to delete department:", error);
+            }
+        }
+    };
+
     const handleEditClick = (id: string, name: string) => {
         setCurrentDepartmentId(id);
         setDepartmentName(name);
         setIsEditing(true);
         setShowModal(true);
+    };
+
+    const handleDeleteClick = (id: string) => {
+        setDepartmentToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const formatDate = (timestamp: string) => {
+        const date = new Date(timestamp);
+        return date.toLocaleString();
     }
 
     return (
         <>
             <div className={"department-manage-container"}>
-                <h1>Departments</h1>
-                <Button variant={"primary"} onClick={() => setShowModal(true)}>
+                <Button className={"add-button"} variant={"primary"} onClick={() => setShowModal(true)}>
                     <FontAwesomeIcon icon={faPlus} className={"me-2"} />
                     Add...
                 </Button>
@@ -83,12 +112,15 @@ const DepartmentManage = (): React.ReactElement => {
                         <tr key={item.id}>
                             <td>{item.id}</td>
                             <td>{item.departmentName}</td>
-                            <td>{item.createdAt}</td>
-                            <td>{item.updatedAt}</td>
+                            <td>{formatDate(item.createAt)}</td>
+                            <td>{formatDate(item.updateAt)}</td>
                             <td>
-                                <Button variant={"warning"}
+                                <Button className={"action-button"} variant={"warning"}
                                         onClick={() => handleEditClick(item.id, item.departmentName)}>
                                     <FontAwesomeIcon icon={faEdit} />
+                                </Button>
+                                <Button className={"action-button"} variant={"danger"} onClick={() => handleDeleteClick(item.id)}>
+                                    <FontAwesomeIcon icon={faTrash} />
                                 </Button>
                             </td>
                         </tr>
@@ -118,6 +150,23 @@ const DepartmentManage = (): React.ReactElement => {
                     </Button>
                     <Button variant={"primary"} onClick={handleAddOrUpdateDepartment}>
                         {isEditing ? "Update" : "Add"}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete Department</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete this department?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant={"secondary"} onClick={() => setShowDeleteModal(false)}>
+                        Close
+                    </Button>
+                    <Button variant={"danger"} onClick={handleDeleteDepartment}>
+                        Delete
                     </Button>
                 </Modal.Footer>
             </Modal>

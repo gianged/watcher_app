@@ -4,8 +4,16 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import authenticateApi from "../api/AuthenticateApi.ts";
 
+interface UserInfo {
+    id: number;
+    username: string;
+    roleLevel: number;
+    profilePicture: string;
+    token: string;
+}
+
 interface AuthenticateType {
-    user?: object | null,
+    user?: UserInfo | null,
     login: (username: string, password: string) => Promise<boolean>,
     logout: () => Promise<void>,
     loginError: string,
@@ -14,7 +22,7 @@ interface AuthenticateType {
 
 const AuthenticateContext = createContext<AuthenticateType>({
     user: {
-        userId: 0,
+        id: 0,
         username: '',
         roleLevel: 0,
         profilePicture: '',
@@ -32,7 +40,7 @@ const AuthenticateContext = createContext<AuthenticateType>({
 })
 
 const AuthenticateProvider: React.FC<{ children: ReactNode }> = ({children}) => {
-    const [user, setUser] = useState<object | null>(null);
+    const [user, setUser] = useState<UserInfo | null>(null);
     const [userCookie, setUserCookie, removeUserCookie] = useCookies(['user']);
     const [loginError, setLoginError] = useState<string>('');
     const navigate = useNavigate();
@@ -45,7 +53,7 @@ const AuthenticateProvider: React.FC<{ children: ReactNode }> = ({children}) => 
             const response = await authenticateApi.login(username, password);
             if (response.success) {
                 setUser({
-                    id: response.data.userId,
+                    id: response.data.id,
                     username: response.data.username,
                     roleLevel: response.data.roleLevel,
                     profilePicture: response.data.profilePicture,

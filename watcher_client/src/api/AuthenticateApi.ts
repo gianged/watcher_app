@@ -16,8 +16,8 @@ const authenticateApi = {
                 password: password
             });
             return {
-                success: response.status === 200,
-                message: response.status === 200 ? "Login successful" : "Login failed",
+                success: true,
+                message: "Login successful",
                 data: response.data
             }
         } catch (error) {
@@ -36,8 +36,8 @@ const authenticateApi = {
                 password: password
             });
             return {
-                success: response.status === 200,
-                message: response.status === 200 ? "Registration successful" : "Registration failed",
+                success: true,
+                message: "Registration successful",
                 data: response.data
             }
         } catch (error) {
@@ -51,10 +51,10 @@ const authenticateApi = {
 
     logout: async (): Promise<AuthenticateApiResponse<any>> => {
         try {
-            const response = await axios.post(API_BASE_URL + "auth/logout");
+            await axios.post(API_BASE_URL + "auth/logout");
             return {
-                message: response.status === 200 ? "Logout successful" : "Logout failed",
-                success: response.status === 200
+                success: true,
+                message: "Logout successful"
             }
         } catch (error) {
             console.error("Error happened during logout:", error);

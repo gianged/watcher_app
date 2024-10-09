@@ -7,13 +7,13 @@ import org.mapstruct.*;
 
 import java.util.Base64;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
 public interface AppUserMapper {
 
-    @Mapping(source = "departmentId", target = "department.id")
+    @Mapping(source = "departmentId", target = "department.id", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
     AppUser toEntityFromUserDto(AppUserDto userDto);
 
-    @Mapping(source = "departmentId", target = "department.id")
+    @Mapping(source = "departmentId", target = "department.id", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
     @Mapping(source = "profilePictureBase64", target = "profilePicture")
     AppUser toEntityFromAuthenticateDto(AuthenticateDto authenticateDto);
 

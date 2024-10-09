@@ -34,6 +34,17 @@ public class Department {
     @OneToMany(mappedBy = "department")
     private Set<AppUser> appUsers = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "department")
+    private Set<Announce> announces = new LinkedHashSet<>();
+
+    public Set<Announce> getAnnounces() {
+        return announces;
+    }
+
+    public void setAnnounces(Set<Announce> announces) {
+        this.announces = announces;
+    }
+
     public Integer getId() {
         return id;
     }

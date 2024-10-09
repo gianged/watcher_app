@@ -1,10 +1,13 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AuthorizeRoutingComponent from "./components/AuthorizeRoutingComponent.tsx";
+import AnnounceManage from "./pages/AnnounceManage.tsx";
 import DepartmentManage from "./pages/DepartmentManage.tsx";
 import { ErrorPage } from "./pages/ErrorPage.tsx";
 import { Home } from "./pages/Home.tsx";
 import { Login } from "./pages/Login.tsx";
+import TicketManage from "./pages/TicketManage.tsx";
+import { UserManage } from "./pages/UserManage.tsx";
 import { AuthenticateProvider } from "./providers/AuthenticateProvider.tsx";
 
 function App(): React.ReactElement {
@@ -17,6 +20,9 @@ function App(): React.ReactElement {
                         <Route path="/" element={<Login />} />
                         <Route path={"/app"} element={<AuthorizeRoutingComponent><Home /></AuthorizeRoutingComponent>}>
                             <Route path={"departments"} element={<DepartmentManage />} />
+                            <Route path={"users"} element={<UserManage />} />
+                            <Route path={"announces"} element={<AnnounceManage />} />
+                            <Route path={"tickets"} element={<TicketManage />} />
                         </Route>
                         <Route path={"/error"} element={<ErrorPage />} />
                         <Route path="*" element={<ErrorPage />} />

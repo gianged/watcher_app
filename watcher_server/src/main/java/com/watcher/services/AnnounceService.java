@@ -1,0 +1,75 @@
+package com.watcher.services;
+
+import com.watcher.dto.AnnounceDto;
+import com.watcher.mappers.AnnounceMapper;
+import com.watcher.models.Announce;
+import com.watcher.models.Department;
+import com.watcher.repositories.AnnounceRepository;
+import com.watcher.repositories.DepartmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+public class AnnounceService {
+
+    private final AnnounceRepository announceRepository;
+    private final AnnounceMapper announceMapper;
+    private final DepartmentRepository departmentRepository;
+
+    @Autowired
+    public AnnounceService(AnnounceRepository announceRepository, AnnounceMapper announceMapper, DepartmentRepository departmentRepository) {
+        this.announceRepository = announceRepository;
+        this.announceMapper = announceMapper;
+        this.departmentRepository = departmentRepository;
+    }
+
+    public List<AnnounceDto> getAllAnnounces() {
+        return announceRepository.findAll().stream()
+                .map(announceMapper::toAnnounceDto)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<AnnounceDto> getAnnounceById(Integer id) {
+        return announceRepository.findById(id)
+                .map(announceMapper::toAnnounceDto);
+    }
+
+    //TODO: add a separate method to get announces by department id
+
+    public AnnounceDto createAnnounce(AnnounceDto announceDto) {
+        Announce announce = announceMapper.toEntityFromAnnounceDto(announceDto);
+        if (announceDto.departmentId() != null) {
+            Department department = departmentRepository.findById(announceDto.departmentId())
+                    .orElseThrow(() -> new RuntimeException("Department not found for id: " + announceDto.departmentId()));
+            announce.setDepartment(department);
+        } else {
+            announce.setDepartment(null);
+        }
+        Announce savedAnnounce = announceRepository.save(announce);
+        return announceMapper.toAnnounceDto(savedAnnounce);
+    }
+
+    public Optional<AnnounceDto> updateAnnounce(Integer id, AnnounceDto announceDto) {
+        return announceRepository.findById(id)
+                .map(existingAnnounce -> {
+                    announceMapper.partialUpdateAnnounceFromAnnounceDto(announceDto, existingAnnounce);
+                    if (announceDto.departmentId() != null) {
+                        Department department = departmentRepository.findById(announceDto.departmentId())
+                                .orElseThrow(() -> new RuntimeException("Department not found for id: " + announceDto.departmentId()));
+                        existingAnnounce.setDepartment(department);
+                    } else {
+                        existingAnnounce.setDepartment(null);
+                    }
+                    Announce updatedAnnounce = announceRepository.save(existingAnnounce);
+                    return announceMapper.toAnnounceDto(updatedAnnounce);
+                });
+    }
+
+    public void deleteAnnounce(Integer id) {
+        announceRepository.deleteById(id);
+    }
+}

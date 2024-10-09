@@ -1,5 +1,7 @@
 package com.watcher.server;
 
+import com.watcher.services.AppUserService;
+import com.watcher.services.AuthenticateService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

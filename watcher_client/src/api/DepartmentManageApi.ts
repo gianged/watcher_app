@@ -16,8 +16,8 @@ const DepartmentManageApi = {
             });
 
             return {
-                success: response.status === 200,
-                message: response.status === 200 ? "Departments fetched successfully" : "Failed to fetch departments",
+                success: true,
+                message: "Departments fetched successfully",
                 data: response.data
             };
         } catch (error) {
@@ -36,8 +36,8 @@ const DepartmentManageApi = {
             });
 
             return {
-                success: response.status === 200,
-                message: response.status === 200 ? "Department fetched successfully" : "Failed to fetch department",
+                success: true,
+                message: "Department fetched successfully",
                 data: response.data
             }
         } catch (error) {
@@ -57,8 +57,8 @@ const DepartmentManageApi = {
                 headers: authHeader
             });
             return {
-                success: response.status === 200,
-                message: response.status === 200 ? "Department created successfully" : "Failed to create department",
+                success: true,
+                message: "Department created successfully",
                 data: response.data
             }
         } catch (error) {
@@ -80,8 +80,8 @@ const DepartmentManageApi = {
                 headers: authHeader
             });
             return {
-                success: response.status === 200,
-                message: response.status === 200 ? "Department updated successfully" : "Failed to update department",
+                success: true,
+                message: "Department updated successfully",
                 data: response.data
             }
 
@@ -100,8 +100,8 @@ const DepartmentManageApi = {
                 headers: authHeader
             });
             return {
-                success: response.status === 200,
-                message: response.status === 200 ? "Department deleted successfully" : "Failed to delete department",
+                success: true,
+                message: "Department deleted successfully",
                 data: response.data
             }
         } catch (error) {

@@ -1,8 +1,9 @@
 package com.watcher.models;
 
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
 
@@ -26,18 +27,19 @@ public class Announce {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "app_user_id")
-    private AppUser appUser;
+    @JoinColumn(name = "department_id")
+    private Department department;
 
-    @CreationTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "create_at", nullable = false, updatable = false)
+    @Column(name = "create_at")
     private Instant createAt;
 
-    @UpdateTimestamp
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "update_at")
     private Instant updateAt;
+
+    @Column(name = "is_public")
+    private Boolean isPublic;
 
     @Column(name = "is_active")
     private Boolean isActive;
@@ -74,12 +76,12 @@ public class Announce {
         this.endDate = endDate;
     }
 
-    public AppUser getAppUser() {
-        return appUser;
+    public Department getDepartment() {
+        return department;
     }
 
-    public void setAppUser(AppUser appUser) {
-        this.appUser = appUser;
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
     public Instant getCreateAt() {
@@ -96,6 +98,14 @@ public class Announce {
 
     public void setUpdateAt(Instant updateAt) {
         this.updateAt = updateAt;
+    }
+
+    public Boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(Boolean isPublic) {
+        this.isPublic = isPublic;
     }
 
     public Boolean getIsActive() {
