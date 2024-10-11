@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Button, Form, Modal, Table } from "react-bootstrap";
 import EnumLoadApi from "../api/EnumLoadApi.ts";
 import TicketManageApi from "../api/TicketManageApi";
+import UserManageApi from "../api/UserManageApi.ts";
 import useAuthenticationHeader from "../providers/AuthenticateHeaderProvider";
 import "./TicketManage.scss";
 import { AuthenticateContext } from "../providers/AuthenticateProvider.tsx";
@@ -22,6 +23,7 @@ const TicketManage = (): React.ReactElement => {
     const [showRightPanel, setShowRightPanel] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [currentTicketId, setCurrentTicketId] = useState<number | null>(null);
+    const [userList, setUserList] = useState<any[]>([]);
     const [ticketForm, setTicketForm] = useState<TicketForm>({
         appUserId: user?.id || 0,
         content: "",
@@ -33,6 +35,7 @@ const TicketManage = (): React.ReactElement => {
     const [ticketStatuses, setTicketStatuses] = useState<any[]>([]);
 
     const rightPanelRef = useRef<HTMLDivElement>(null);
+
 
     useEffect(() => {
         const fetchTickets = async () => {
@@ -53,13 +56,30 @@ const TicketManage = (): React.ReactElement => {
                     setTicketStatuses(response.data);
                 }
             } catch (error) {
-                console.error("Failed to fetch ticket statuses:", error);
+                console.error("Failed to fetch username:", error);
+            }
+        };
+
+        const fetchUsers = async () => {
+            try {
+                const response = await UserManageApi.getAll(authHeader);
+                if (response.success) {
+                    setUserList(response.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch users:", error);
             }
         };
 
         fetchTickets().then();
         fetchTicketStatuses().then();
-    }, []);
+        fetchUsers().then();
+    }, [showRightPanel, showDeleteModal]);
+
+    const getStatusNameById = (id: number): string => {
+        const status = ticketStatuses.find((status: any) => status.id === id);
+        return status ? status.statusName : 'Unknown';
+    };
 
     const handleAddClick = () => {
         setIsEditing(false);
@@ -152,6 +172,7 @@ const TicketManage = (): React.ReactElement => {
                 <tr>
                     <th>ID</th>
                     <th>Content</th>
+                    <th>User</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -161,7 +182,8 @@ const TicketManage = (): React.ReactElement => {
                     <tr key={ticket.id}>
                         <td>{ticket.id}</td>
                         <td>{ticket.content}</td>
-                        <td>{ticket.status}</td>
+                        <td>{userList.find((user: any) => user.id === ticket.appUserId)?.username}</td>
+                        <td>{getStatusNameById(ticket.status)}</td>
                         <td>
                             <Button className={"action-button"} variant="warning"
                                     onClick={() => handleEditClick(ticket.id, ticket)}>

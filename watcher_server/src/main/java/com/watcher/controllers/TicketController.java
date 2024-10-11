@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/watcher/tickets")
@@ -50,5 +51,11 @@ public class TicketController {
     public ResponseEntity<Void> deleteTicket(@PathVariable Integer id) {
         ticketService.deleteTicket(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/user/{appUserId}")
+    public ResponseEntity<List<TicketDto>> getTicketsByAppUserId(@PathVariable Integer appUserId) {
+        List<TicketDto> tickets = ticketService.getTicketsByAppUserId(appUserId);
+        return ResponseEntity.ok(tickets);
     }
 }

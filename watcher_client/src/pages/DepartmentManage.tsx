@@ -28,7 +28,7 @@ const DepartmentManage = (): React.ReactElement => {
             }
         };
         fetchDepartments().then();
-    }, []);
+    }, [showModal, showDeleteModal]);
 
     const handleAddOrUpdateDepartment = async () => {
         try {
@@ -119,7 +119,8 @@ const DepartmentManage = (): React.ReactElement => {
                                         onClick={() => handleEditClick(item.id, item.departmentName)}>
                                     <FontAwesomeIcon icon={faEdit} />
                                 </Button>
-                                <Button className={"action-button"} variant={"danger"} onClick={() => handleDeleteClick(item.id)}>
+                                <Button className={"action-button"} variant={"danger"}
+                                        onClick={() => handleDeleteClick(item.id)}>
                                     <FontAwesomeIcon icon={faTrash} />
                                 </Button>
                             </td>

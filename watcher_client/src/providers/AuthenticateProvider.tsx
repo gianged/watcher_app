@@ -8,6 +8,7 @@ interface UserInfo {
     id: number;
     username: string;
     roleLevel: number;
+    departmentId: number;
     profilePicture: string;
     token: string;
 }
@@ -25,6 +26,7 @@ const AuthenticateContext = createContext<AuthenticateType>({
         id: 0,
         username: '',
         roleLevel: 0,
+        departmentId: 0,
         profilePicture: '',
         token: ''
     },
@@ -40,8 +42,8 @@ const AuthenticateContext = createContext<AuthenticateType>({
 })
 
 const AuthenticateProvider: React.FC<{ children: ReactNode }> = ({children}) => {
-    const [user, setUser] = useState<UserInfo | null>(null);
     const [userCookie, setUserCookie, removeUserCookie] = useCookies(['user']);
+    const [user, setUser] = useState<UserInfo | null>(userCookie.user || null);
     const [loginError, setLoginError] = useState<string>('');
     const navigate = useNavigate();
 
@@ -56,7 +58,8 @@ const AuthenticateProvider: React.FC<{ children: ReactNode }> = ({children}) => 
                     id: response.data.id,
                     username: response.data.username,
                     roleLevel: response.data.roleLevel,
-                    profilePicture: response.data.profilePicture,
+                    departmentId: response.data.departmentId,
+                    profilePicture: `data:image/png;base64,${response.data.profilePictureBase64}`,
                     token: response.data.token
                 });
                 return true;

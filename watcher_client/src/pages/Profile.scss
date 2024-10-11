@@ -1,0 +1,21 @@
+.profile-container {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+
+  form {
+    margin-bottom: 20px;
+  }
+
+  p {
+    margin-top: 20px;
+    color: green;
+  }
+
+  .update-button {
+    margin-top: 20px;
+  }
+}

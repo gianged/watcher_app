@@ -62,7 +62,7 @@ const AnnounceManage = (): React.ReactElement => {
 
         fetchAnnouncements().then();
         fetchDepartments().then();
-    }, []);
+    }, [showRightPanel, showDeleteModal]);
 
     const handleAddClick = () => {
         setIsEditing(false);
@@ -176,6 +176,11 @@ const AnnounceManage = (): React.ReactElement => {
         };
     }, []);
 
+    const getDepartmentNameById = (id: number) => {
+        const department = departments.find(dept => dept.id === id);
+        return department ? department.departmentName : 'Unknown';
+    };
+
     return (
         <>
             <div className="announce-manage-container">
@@ -201,7 +206,7 @@ const AnnounceManage = (): React.ReactElement => {
                             <td>{announce.content}</td>
                             <td>{new Date(announce.startDate).toLocaleDateString()}</td>
                             <td>{new Date(announce.endDate).toLocaleDateString()}</td>
-                            <td>{announce.isPublic ? "Public" : announce.departmentId}</td>
+                            <td>{announce.isPublic ? "Public" : getDepartmentNameById(announce.departmentId)}</td>
                             <td>{announce.isPublic ? "Yes" : "No"}</td>
                             <td>{announce.isActive ? "Yes" : "No"}</td>
                             <td>

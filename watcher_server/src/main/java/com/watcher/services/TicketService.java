@@ -52,4 +52,10 @@ public class TicketService {
     public void deleteTicket(Integer id) {
         ticketRepository.deleteById(id);
     }
+
+    public List<TicketDto> getTicketsByAppUserId(Integer appUserId) {
+        return ticketRepository.findByAppUserId(appUserId).stream()
+                .map(ticketMapper::toTIcketDto)
+                .collect(Collectors.toList());
+    }
 }

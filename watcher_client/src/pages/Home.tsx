@@ -23,6 +23,8 @@ export const Home = (): React.ReactElement => {
     const [showLogoutModal, setShowLogoutModal] = React.useState(false);
     const {logout} = useContext(AuthenticateContext);
 
+    const userProfilePicture = user?.profilePictureBase64 || "/default_pfp.png";
+
     return (
         <>
             <div className={"home-container"}>
@@ -44,7 +46,7 @@ export const Home = (): React.ReactElement => {
                                     </OverlayTrigger>
                                 </Nav.Link>
                                 <NavDropdown title={
-                                    <Image src={"/default_pfp.png"}
+                                    <Image src={userProfilePicture}
                                            roundedCircle
                                            width={"30"}
                                            height={"30"}
@@ -53,7 +55,7 @@ export const Home = (): React.ReactElement => {
                                 }
                                              id={"basic-nav-dropdown"}
                                              align={"end"}>
-                                    <NavDropdown.Item as={Link} to={"/home"}>
+                                    <NavDropdown.Item as={Link} to={"/app/profile"}>
                                         <FontAwesomeIcon icon={faUser} className={"me-2"} />
                                         Profile
                                     </NavDropdown.Item>
@@ -78,10 +80,6 @@ export const Home = (): React.ReactElement => {
                             </Nav.Link>
                             {user?.roleLevel > 0 && user?.roleLevel <= 2 && (
                                 <>
-                                    <Nav.Link as={Link} to={"/app/users"} active={location.pathname === "/app/users"}>
-                                        <FontAwesomeIcon icon={faUsers} className={"me-2"} />
-                                        User Manage
-                                    </Nav.Link>
                                     <Nav.Link as={Link} to={"/app/departments"}
                                               active={location.pathname === "/app/departments"}>
                                         <FontAwesomeIcon icon={faBuilding} className={"me-2"} />
@@ -91,6 +89,10 @@ export const Home = (): React.ReactElement => {
                             )}
                             {user?.roleLevel > 0 && user?.roleLevel <= 3 && (
                                 <>
+                                    <Nav.Link as={Link} to={"/app/users"} active={location.pathname === "/app/users"}>
+                                        <FontAwesomeIcon icon={faUsers} className={"me-2"} />
+                                        User Manage
+                                    </Nav.Link>
                                     <Nav.Link as={Link} to={"/app/announces"}
                                               active={location.pathname === "/app/announces"}>
                                         <FontAwesomeIcon icon={faBullhorn} className={"me-2"} />

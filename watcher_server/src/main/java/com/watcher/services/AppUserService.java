@@ -43,9 +43,9 @@ public class AppUserService {
 
     public AppUserDto createUser(AppUserDto userDto) {
         AppUser appUser = userMapper.toEntityFromUserDto(userDto);
-        if (userDto.departmentId() != null) {
-            Department department = departmentRepository.findById(userDto.departmentId())
-                    .orElseThrow(() -> new RuntimeException("Department not found for id: " + userDto.departmentId()));
+        if (userDto.getDepartmentId() != null) {
+            Department department = departmentRepository.findById(userDto.getDepartmentId())
+                    .orElseThrow(() -> new RuntimeException("Department not found for id: " + userDto.getDepartmentId()));
             appUser.setDepartment(department);
         } else {
             appUser.setDepartment(null);
@@ -58,10 +58,19 @@ public class AppUserService {
     public Optional<AppUserDto> updateUser(Integer id, AppUserDto userDto) {
         return appUserRepository.findById(id)
                 .map(existingUser -> {
-                    if (userDto.password() != null && !userDto.password().isEmpty()
-                            && !userDto.password().equals(existingUser.getPassword())) {
-                        existingUser.setPassword(passwordEncoder.encode(existingUser.getPassword()));
+                    if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()
+                            && !userDto.getPassword().equals(existingUser.getPassword())) {
+                        existingUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
                     }
+
+                    if (userDto.getDepartmentId() != null) {
+                        Department newDepartment = departmentRepository.findById(userDto.getDepartmentId())
+                                .orElseThrow(() -> new RuntimeException("Department not found for id: " + userDto.getDepartmentId()));
+                        existingUser.setDepartment(newDepartment);
+                    } else {
+                        existingUser.setDepartment(null);
+                    }
+
                     userMapper.partialUpdateAppUserFromAppUserDto(userDto, existingUser);
                     AppUser updatedUser = appUserRepository.save(existingUser);
                     return userMapper.toAppUserDto(updatedUser);
@@ -74,5 +83,11 @@ public class AppUserService {
 
     public boolean usernameCheck(String input) {
         return appUserRepository.findByUsername(input).isPresent();
+    }
+
+    public List<AppUserDto> getUsersByDepartment(Integer departmentId) {
+        return appUserRepository.findByDepartment_Id(departmentId).stream()
+                .map(userMapper::toAppUserDto)
+                .collect(Collectors.toList());
     }
 }

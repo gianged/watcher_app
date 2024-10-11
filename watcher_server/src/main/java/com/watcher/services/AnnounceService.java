@@ -3,6 +3,7 @@ package com.watcher.services;
 import com.watcher.dto.AnnounceDto;
 import com.watcher.mappers.AnnounceMapper;
 import com.watcher.models.Announce;
+import com.watcher.models.AppUser;
 import com.watcher.models.Department;
 import com.watcher.repositories.AnnounceRepository;
 import com.watcher.repositories.DepartmentRepository;
@@ -56,17 +57,30 @@ public class AnnounceService {
     public Optional<AnnounceDto> updateAnnounce(Integer id, AnnounceDto announceDto) {
         return announceRepository.findById(id)
                 .map(existingAnnounce -> {
-                    announceMapper.partialUpdateAnnounceFromAnnounceDto(announceDto, existingAnnounce);
                     if (announceDto.departmentId() != null) {
-                        Department department = departmentRepository.findById(announceDto.departmentId())
+                        Department newDepartment = departmentRepository.findById(announceDto.departmentId())
                                 .orElseThrow(() -> new RuntimeException("Department not found for id: " + announceDto.departmentId()));
-                        existingAnnounce.setDepartment(department);
+                        existingAnnounce.setDepartment(newDepartment);
                     } else {
                         existingAnnounce.setDepartment(null);
                     }
+
+                    announceMapper.partialUpdateAnnounceFromAnnounceDto(announceDto, existingAnnounce);
                     Announce updatedAnnounce = announceRepository.save(existingAnnounce);
                     return announceMapper.toAnnounceDto(updatedAnnounce);
                 });
+    }
+
+    public List<AnnounceDto> getAnnouncesByDepartment(Integer departmentId) {
+        return announceRepository.findByDepartment_Id(departmentId).stream()
+                .map(announceMapper::toAnnounceDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<AnnounceDto> getAnnouncesByDepartmentIncludingPublic(Integer departmentId) {
+        return announceRepository.findByDepartment_IdOrDepartmentIsNullAndIsPublicTrue(departmentId).stream()
+                .map(announceMapper::toAnnounceDto)
+                .collect(Collectors.toList());
     }
 
     public void deleteAnnounce(Integer id) {

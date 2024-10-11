@@ -103,6 +103,25 @@ const TicketManageApi = {
                     message: "Failed to delete ticket"
                 };
             }
+        },
+
+        getTicketsByAppUserId: async (authHeader: {
+            Authorization: string
+        }, appUserId: number): Promise<TicketManageApiResponse<any>> => {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/user/${appUserId}`, {headers: authHeader});
+                return {
+                    success: true,
+                    message: "Tickets fetched successfully",
+                    data: response.data
+                };
+            } catch (error) {
+                console.error("Failed to fetch tickets by appUserId:", error);
+                return {
+                    success: false,
+                    message: "Failed to fetch tickets by appUserId"
+                };
+            }
         }
     }
 ;

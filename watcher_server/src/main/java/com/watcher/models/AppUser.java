@@ -17,7 +17,7 @@ public class AppUser {
     @Column(name = "app_user_id", nullable = false)
     private Integer id;
 
-    @Column(name = "profile_picture")
+    @Column(name = "profile_picture", columnDefinition = "LONGBLOB")
     @Lob
     private byte[] profilePicture;
 

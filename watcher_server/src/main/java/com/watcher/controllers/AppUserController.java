@@ -1,10 +1,17 @@
 package com.watcher.controllers;
 
 import com.watcher.dto.AppUserDto;
+import com.watcher.models.AppUser;
+import com.watcher.models.RoleEnum;
+import com.watcher.models.WatcherUserDetails;
 import com.watcher.services.AppUserService;
+import com.watcher.services.WatcherUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +27,23 @@ public class AppUserController {
         this.appUserService = appUserService;
     }
 
+    private AppUser getLoggedInUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof WatcherUserDetails) {
+            return ((WatcherUserDetails) principal).getAppUser();
+        } else {
+            String principalClassName = principal != null ? principal.getClass().getName() : "null";
+            throw new IllegalStateException("Principal is not an instance of WatcherUserDetails. Principal type: " + principalClassName);
+        }
+    }
+
+    private boolean isSystemAdminOrDirector(AppUser user) {
+        return user.getRoleLevel().equals(RoleEnum.SYSTEM_ADMIN.getId()) ||
+                user.getRoleLevel().equals(RoleEnum.DIRECTOR.getId());
+    }
+
     @GetMapping
     public ResponseEntity<List<AppUserDto>> getAllUsers() {
         List<AppUserDto> users = appUserService.getAllUsers();
@@ -28,6 +52,7 @@ public class AppUserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AppUserDto> getUserById(@PathVariable Integer id) {
+        AppUser loggedInUser = getLoggedInUser();
         Optional<AppUserDto> user = appUserService.getUserById(id);
         return user.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -35,7 +60,7 @@ public class AppUserController {
 
     @PostMapping
     public ResponseEntity<String> createUser(@RequestBody AppUserDto userDto) {
-        if (appUserService.usernameCheck(userDto.username())) {
+         if (appUserService.usernameCheck(userDto.getUsername())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists");
         }
         AppUserDto createdUser = appUserService.createUser(userDto);

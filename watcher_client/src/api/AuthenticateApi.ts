@@ -65,6 +65,37 @@ const authenticateApi = {
         }
     },
 
+    updateUser: async (id: string, newPassword?: string, newProfilePicture?: File | string): Promise<AuthenticateApiResponse<any>> => {
+        try {
+            const formData = new FormData();
+            formData.append('id', id.toString());
+            if (newPassword) formData.append('newPassword', newPassword);
+            if (newProfilePicture instanceof File) {
+                formData.append('newProfilePicture', newProfilePicture);
+            } else if (typeof newProfilePicture === 'string') {
+                formData.append('newProfilePicture', newProfilePicture);
+            }
+
+            const response = await axios.put(`${API_BASE_URL}auth/update`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            });
+
+            return {
+                success: true,
+                message: "User updated successfully",
+                data: response.data
+            };
+        } catch (error) {
+            console.error("Failed to update user:", error);
+            return {
+                success: false,
+                message: "Failed to update user"
+            };
+        }
+    },
+
     checkUsername: async (input: string): Promise<boolean> => {
         try {
             if (!(input.length === 0)) {

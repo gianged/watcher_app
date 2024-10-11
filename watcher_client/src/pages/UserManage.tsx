@@ -43,8 +43,7 @@ export const UserManage = (): React.ReactElement => {
             try {
                 const response = await UserManageApi.getAll(authHeader);
                 if (response.success) {
-                    const filteredUsers = response.data.filter((u: any) => u.id !== user?.id);
-                    setUserList(filteredUsers);
+                    setUserList(response.data);
                 }
             } catch (error) {
                 console.error("Failed to fetch users:", error);
@@ -76,10 +75,16 @@ export const UserManage = (): React.ReactElement => {
         fetchUser().then();
         fetchRoles().then();
         fetchDepartments().then();
-    }, []);
+    }, [showRightPanel, showDeleteModal]);
 
     const handleAddOrUpdate = async () => {
         try {
+            let userFormToSubmit = {...userForm};
+
+            if (user?.roleLevel === 3) {
+                userFormToSubmit.departmentId = user?.departmentId?.toString();
+            }
+
             let response;
             if (isEditing && currentUserId) {
                 response = await UserManageApi.update(authHeader, currentUserId, userForm);
@@ -96,7 +101,7 @@ export const UserManage = (): React.ReactElement => {
                 setUserForm({
                     username: "",
                     password: "",
-                    departmentId: null,
+                    departmentId: user?.roleLevel === 3 ? user?.departmentId.toString() : null,
                     roleLevel: 4,
                     isActive: false
                 });
@@ -115,7 +120,7 @@ export const UserManage = (): React.ReactElement => {
         setUserForm({
             username: "",
             password: "",
-            departmentId: null,
+            departmentId: user?.roleLevel === 3 ? user?.departmentId.toString() : null,
             roleLevel: 4,
             isActive: false
         });
@@ -170,6 +175,11 @@ export const UserManage = (): React.ReactElement => {
         };
     }, [showRightPanel]);
 
+    const getDepartmentNameById = (id: number) => {
+        const department = departments.find(dept => dept.id === id);
+        return department ? department.departmentName : 'Unknown';
+    };
+
     return (
         <>
             <div className="user-manage-container">
@@ -188,21 +198,29 @@ export const UserManage = (): React.ReactElement => {
                     </tr>
                     </thead>
                     <tbody>
-                    {userList.map(user => (
-                        <tr key={user.id}>
-                            <td>{user.username}</td>
-                            <td>{user.departmentId}</td>
-                            <td>{roleLevels.find(role => role.id === user.roleLevel)?.roleName}</td>
-                            <td>{user.isActive ? "Active" : "Inactive"}</td>
+                    {userList.map(u => (
+                        <tr key={u.id}>
+                            <td>{u.username}</td>
+                            <td>{getDepartmentNameById(u.departmentId)}</td>
+                            <td>{roleLevels.find(role => role.id === u.roleLevel)?.roleName}</td>
+                            <td>{u.isActive ? "Active" : "Inactive"}</td>
                             <td>
-                                <Button className={"action-button"} variant={"warning"}
-                                        onClick={() => handleEditClick(user.id, user)}>
-                                    <FontAwesomeIcon icon={faEdit} />
-                                </Button>
-                                <Button className={"action-button"} variant={"danger"}
-                                        onClick={() => handleDeleteClick(user.id)}>
-                                    <FontAwesomeIcon icon={faTrash} />
-                                </Button>
+                                {u.id !== user?.id && (
+                                    <>
+                                        <Button
+                                            className="action-button" variant={"warning"}
+                                            onClick={() => handleEditClick(u.id, u)}
+                                        >
+                                            <FontAwesomeIcon icon={faEdit} />
+                                        </Button>
+                                        <Button
+                                            className="action-button" variant={"danger"}
+                                            onClick={() => handleDeleteClick(u.id)}
+                                        >
+                                            <FontAwesomeIcon icon={faTrash} />
+                                        </Button>
+                                    </>
+                                )}
                             </td>
                         </tr>
                     ))}
@@ -232,33 +250,42 @@ export const UserManage = (): React.ReactElement => {
                                         onChange={e => setUserForm({...userForm, password: e.target.value})}
                                     />
                                 </Form.Group>
-                                <Form.Group controlId="formDepartment">
-                                    <Form.Label column={"sm"}>Department</Form.Label>
-                                    <Form.Control
-                                        as="select"
-                                        value={userForm.departmentId || ""}
-                                        onChange={e => setUserForm({...userForm, departmentId: e.target.value || null})}
-                                    >
-                                        <option value="" defaultChecked>No Department</option>
-                                        {departments.map(department => (
-                                            <option key={department.id} value={department.id}>
-                                                {department.departmentName}
-                                            </option>
-                                        ))}
-                                    </Form.Control>
-                                </Form.Group>
-                                <Form.Group controlId="formRole">
-                                    <Form.Label column={"sm"}>Role</Form.Label>
-                                    <Form.Control
-                                        as="select"
-                                        value={userForm.roleLevel}
-                                        onChange={e => setUserForm({...userForm, roleLevel: parseInt(e.target.value)})}
-                                    >
-                                        {roleLevels.map(role => (
-                                            <option key={role.id} value={role.id}>{role.roleName}</option>
-                                        ))}
-                                    </Form.Control>
-                                </Form.Group>
+                                {user?.roleLevel !== 3 && (
+                                    <Form.Group controlId="formDepartment">
+                                        <Form.Label column={"sm"}>Department</Form.Label>
+                                        <Form.Control
+                                            as="select"
+                                            value={userForm.departmentId || ""}
+                                            onChange={(e) =>
+                                                setUserForm({...userForm, departmentId: e.target.value})
+                                            }
+                                        >
+                                            <option value="">Select a Department</option>
+                                            {departments.map((department) => (
+                                                <option key={department.id} value={department.id}>
+                                                    {department.departmentName}
+                                                </option>
+                                            ))}
+                                        </Form.Control>
+                                    </Form.Group>
+                                )}
+                                {user?.roleLevel !== 3 && (
+                                    <Form.Group controlId="formRole">
+                                        <Form.Label column={"sm"}>Role</Form.Label>
+                                        <Form.Control
+                                            as="select"
+                                            value={userForm.roleLevel}
+                                            onChange={e => setUserForm({
+                                                ...userForm,
+                                                roleLevel: parseInt(e.target.value)
+                                            })}
+                                        >
+                                            {roleLevels.map(role => (
+                                                <option key={role.id} value={role.id}>{role.roleName}</option>
+                                            ))}
+                                        </Form.Control>
+                                    </Form.Group>
+                                )}
                                 <Form.Group controlId="formStatus" className={"checkbox-group"}>
                                     <Form.Check
                                         type="checkbox"
@@ -275,7 +302,8 @@ export const UserManage = (): React.ReactElement => {
                             </Form>
                         </div>
                     </div>
-                )}
+                )
+                }
 
                 <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
                     <Modal.Header closeButton>
@@ -293,5 +321,6 @@ export const UserManage = (): React.ReactElement => {
                 </Modal>
             </div>
         </>
-    );
+    )
+        ;
 }

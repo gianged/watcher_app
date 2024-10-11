@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Console;
 
@@ -40,6 +41,14 @@ public class AuthenticateController {
     public ResponseEntity<AuthenticateDto> register(@RequestBody AuthenticateDto authenticateDto) {
         AuthenticateDto dto = authenticateService.registerUser(authenticateDto.getUsername(), authenticateDto.getPassword());
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<AuthenticateDto> updateUser(@RequestParam String id,
+                                                      @RequestParam(required = false) String newPassword,
+                                                      @RequestParam(required = false) MultipartFile newProfilePicture) {
+        AuthenticateDto updateUser = authenticateService.updateUser(id, newPassword, newProfilePicture);
+        return ResponseEntity.ok(updateUser);
     }
 
     @GetMapping("/check-username")
