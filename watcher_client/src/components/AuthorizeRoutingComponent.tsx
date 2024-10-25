@@ -1,16 +1,15 @@
 import React, { ReactNode, useEffect } from "react";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 
 const AuthorizeRoutingComponent: React.FC<{ children: ReactNode }> = ({children}) => {
-    const [cookies] = useCookies(["user"]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!cookies.user) {
-            navigate("/login");
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!user || !user.token) {
+            navigate("/");
         }
-    }, [cookies, navigate]);
+    }, [navigate]);
 
     return (
         <>

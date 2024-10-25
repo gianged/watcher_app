@@ -1,6 +1,5 @@
 import { AxiosError } from "axios";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import authenticateApi from "../api/AuthenticateApi.ts";
 
@@ -42,26 +41,26 @@ const AuthenticateContext = createContext<AuthenticateType>({
 })
 
 const AuthenticateProvider: React.FC<{ children: ReactNode }> = ({children}) => {
-    const [userCookie, setUserCookie, removeUserCookie] = useCookies(['user']);
-    const [user, setUser] = useState<UserInfo | null>(userCookie.user || null);
+    const [user, setUser] = useState<UserInfo | null>(()=> {
+        const localUser = localStorage.getItem('user');
+        return localUser ? JSON.parse(localUser) : null;
+    });
     const [loginError, setLoginError] = useState<string>('');
     const navigate = useNavigate();
 
     const login = async (username: string, password: string) => {
         try {
-            if (userCookie) {
-                removeUserCookie('user');
-            }
             const response = await authenticateApi.login(username, password);
             if (response.success) {
-                setUser({
+                const userData = {
                     id: response.data.id,
                     username: response.data.username,
                     roleLevel: response.data.roleLevel,
                     departmentId: response.data.departmentId,
                     profilePicture: `data:image/png;base64,${response.data.profilePictureBase64}`,
                     token: response.data.token
-                });
+                }
+                setUser(userData);
                 return true;
             } else {
                 setLoginError(response.message)
@@ -79,7 +78,7 @@ const AuthenticateProvider: React.FC<{ children: ReactNode }> = ({children}) => 
             const response = await authenticateApi.logout();
             if (response.success) {
                 setUser(null);
-                removeUserCookie('user');
+                localStorage.removeItem('user');
                 navigate("/");
             }
         } catch (e) {
@@ -89,7 +88,7 @@ const AuthenticateProvider: React.FC<{ children: ReactNode }> = ({children}) => 
 
     useEffect(() => {
         if (user) {
-            setUserCookie('user', user);
+            localStorage.setItem('user', JSON.stringify(user));
             navigate("/app");
         }
     }, [user]);

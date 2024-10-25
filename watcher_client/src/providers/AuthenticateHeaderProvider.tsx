@@ -1,10 +1,8 @@
-import { useCookies } from "react-cookie";
-
 const useAuthenticationHeader = (): { Authorization: string } => {
-    const [userCookie] = useCookies(['user']);
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
 
     return {
-        Authorization: userCookie?.user?.token ? `${userCookie.user.token}` : ''
+        Authorization: user?.token ? `${user.token}` : ''
     };
 };
 

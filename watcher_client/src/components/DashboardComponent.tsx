@@ -1,9 +1,9 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
-import { Card, Col, Container, Row, Button, Modal, Form } from "react-bootstrap";
-import { useCookies } from "react-cookie";
+import { Button, Card, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import AnnounceManageApi from "../api/AnnounceManageApi";
+import EnumLoadApi from "../api/EnumLoadApi.ts";
 import TicketManageApi from "../api/TicketManageApi.ts";
 import useAuthenticationHeader from "../providers/AuthenticateHeaderProvider.tsx";
 
@@ -19,8 +19,9 @@ export const DashboardComponent: React.FC<DashboardProps> = ({role, department})
     const [showModal, setShowModal] = useState(false);
     const [newTicketContent, setNewTicketContent] = useState("");
     const authHeader = useAuthenticationHeader();
-    const [cookies] = useCookies(['user']);
-    const userId = cookies.user?.id;
+    const [ticketStatuses, setTicketStatuses] = useState<any[]>([]);
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const userId = user?.id;
 
     useEffect(() => {
         const fetchAnnouncements = async () => {
@@ -52,6 +53,18 @@ export const DashboardComponent: React.FC<DashboardProps> = ({role, department})
             }
         };
 
+        const fetchTicketStatuses = async () => {
+            try {
+                const response = await EnumLoadApi.getTicketStatus();
+                if (response.success) {
+                    setTicketStatuses(response.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch username:", error);
+            }
+        };
+
+        fetchTicketStatuses().then();
         fetchTickets().then();
         fetchAnnouncements().then();
     }, []);
@@ -80,6 +93,11 @@ export const DashboardComponent: React.FC<DashboardProps> = ({role, department})
         } catch (error) {
             console.error("Error adding ticket:", error);
         }
+    };
+
+    const getStatusNameById = (id: number): string => {
+        const status = ticketStatuses.find((status: any) => status.id === id);
+        return status ? status.statusName : 'Unknown';
     };
 
     return (
@@ -112,8 +130,9 @@ export const DashboardComponent: React.FC<DashboardProps> = ({role, department})
                         {tickets.map((ticket) => (
                             <Col key={ticket.id} sm={12} md={6} lg={4} className="mb-4">
                                 <Card>
-                                <Card.Body>
+                                    <Card.Body>
                                         <Card.Text>{ticket.content}</Card.Text>
+                                        <Card.Text>Status: {getStatusNameById(ticket.status)}</Card.Text>
                                     </Card.Body>
                                 </Card>
                             </Col>

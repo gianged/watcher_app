@@ -1,10 +1,26 @@
 .home-container {
+  height: 100vh;
   overflow-x: hidden;
+  background: linear-gradient(to right, #f0f4f8, #d9e2ec);
+  display: flex;
+  flex-direction: column;
 
   .top-navbar {
-    background-color: lightgray;
-    position: relative;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #343a40;
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem 1rem;
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fff;
+    }
 
     .icon-wrapper {
       position: relative;
@@ -24,12 +40,12 @@
     }
 
     .avatar-image {
-      border: 2px solid aliceblue;
+      border: 2px solid #f8f9fa;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
     }
 
     .dropdown-toggle:hover .avatar-image {
-      border-color: cornflowerblue;
+      border-color: #007bff;
     }
 
     .dropdown-menu {
@@ -46,28 +62,46 @@
   }
 
   .sidebar {
-    background-color: lightgray;
-    position: relative;
-    padding: 20px;
-    height: 100vh;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 56px;
+    left: 0;
+    bottom: 0;
+    background-color: #343a40;
+    color: #fff;
+    width: 240px;
+    padding: 1rem;
+    height: calc(100vh - 56px);
+    z-index: 999;
 
-    .nav-pills {
-      .nav-link {
-        color: dimgray;
-        margin-bottom: 10px;
-        border-radius: 5px;
+    .nav-link {
+      color: #adb5bd;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
 
-        &:hover {
-          background-color: lightgray;
-        }
+      &.active {
+        color: #fff;
+        background-color: #007bff;
+      }
 
-        &.active {
-          background-color: gray;
-          color: white;
-        }
+      &:hover {
+        color: #fff;
+        background-color: #495057;
+      }
+
+      .me-2 {
+        margin-right: 0.5rem;
       }
     }
   }
-}
 
+  .content {
+    position: fixed;
+    top: 56px;
+    left: 240px;
+    right: 0;
+    bottom: 0;
+    background-color: #f8f9fa;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+}

@@ -12,25 +12,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext } from "react";
 import "./Home.scss"
 import { Button, Container, Image, Modal, Nav, Navbar, NavDropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { useCookies } from "react-cookie";
 import { Link, Outlet } from "react-router-dom";
 import { AuthenticateContext } from "../providers/AuthenticateProvider.tsx";
 
 export const Home = (): React.ReactElement => {
-    const [cookies] = useCookies(['user']);
-    const user = cookies.user;
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
     const newTicketCount = 5; // changing it soon
     const [showLogoutModal, setShowLogoutModal] = React.useState(false);
     const {logout} = useContext(AuthenticateContext);
 
-    const userProfilePicture = user?.profilePictureBase64 || "/default_pfp.png";
+    const userProfilePicture = user?.profilePicture || "/default_pfp.png";
 
     return (
         <>
             <div className={"home-container"}>
                 <Navbar className={"top-navbar"} expand={"lg"}>
                     <Container fluid>
-                        <Navbar.Toggle aria-controls={"basic-sidebar-nav"} />
+                        <Navbar.Brand as={Link} to={"/app"} className={"brand"}>MyApp</Navbar.Brand>
+                        <Navbar.Toggle aria-controls={"basic-navbar-nav"} />
                         <Navbar.Collapse id={"basic-navbar-nav"} className={"justify-content-end"}>
                             <Nav>
                                 <Nav.Link href={"#"}>
@@ -93,13 +92,11 @@ export const Home = (): React.ReactElement => {
                                         <FontAwesomeIcon icon={faUsers} className={"me-2"} />
                                         User Manage
                                     </Nav.Link>
-                                    <Nav.Link as={Link} to={"/app/announces"}
-                                              active={location.pathname === "/app/announces"}>
+                                    <Nav.Link as={Link} to={"/app/announces"} active={location.pathname === "/app/announces"}>
                                         <FontAwesomeIcon icon={faBullhorn} className={"me-2"} />
-                                        Announce Manage
+                                        Announcements
                                     </Nav.Link>
-                                    <Nav.Link as={Link} to={"/app/tickets"}
-                                              active={location.pathname === "/app/tickets"}>
+                                    <Nav.Link as={Link} to={"/app/tickets"} active={location.pathname === "/app/tickets"}>
                                         <FontAwesomeIcon icon={faTicketAlt} className={"me-2"} />
                                         Ticket Manage
                                     </Nav.Link>
@@ -107,28 +104,26 @@ export const Home = (): React.ReactElement => {
                             )}
                         </Nav>
                     </div>
-                    <Container>
+                    <div className={"content"}>
                         <Outlet />
-                    </Container>
+                    </div>
                 </div>
-
-                <Modal show={showLogoutModal} onHide={() => setShowLogoutModal(false)}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Going soon?</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>Are you sure you want to logout</Modal.Body>
-                    <Modal.Footer>
-                        <Button variant={"secondary"} onClick={() => setShowLogoutModal(false)}>
-                            Cancel
-                        </Button>
-                        <Button variant={"primary"} onClick={async () => {
-                            await logout();
-                        }}>
-                            Logout
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
             </div>
+
+            <Modal show={showLogoutModal} onHide={() => setShowLogoutModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Logout</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to logout?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowLogoutModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" onClick={logout}>
+                        Logout
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     )
 }

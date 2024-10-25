@@ -25,19 +25,19 @@ public class TicketService {
 
     public List<TicketDto> getAllTickets() {
         return ticketRepository.findAll().stream()
-                .map(ticketMapper::toTIcketDto)
+                .map(ticketMapper::toTicketDto)
                 .collect(Collectors.toList());
     }
 
     public Optional<TicketDto> getTicketById(Integer id) {
         return ticketRepository.findById(id)
-                .map(ticketMapper::toTIcketDto);
+                .map(ticketMapper::toTicketDto);
     }
 
     public TicketDto createTicket(TicketDto ticketDto) {
         Ticket ticket = ticketMapper.toEntityFromTicketDto(ticketDto);
         Ticket savedTicket = ticketRepository.save(ticket);
-        return ticketMapper.toTIcketDto(savedTicket);
+        return ticketMapper.toTicketDto(savedTicket);
     }
 
     public Optional<TicketDto> updateTicket(Integer id, TicketDto ticketDto) {
@@ -45,7 +45,7 @@ public class TicketService {
                 .map(existingTicket -> {
                     ticketMapper.partialUpdateTicketFromTicketDto(ticketDto, existingTicket);
                     Ticket updatedTicket = ticketRepository.save(existingTicket);
-                    return ticketMapper.toTIcketDto(updatedTicket);
+                    return ticketMapper.toTicketDto(updatedTicket);
                 });
     }
 
@@ -55,7 +55,7 @@ public class TicketService {
 
     public List<TicketDto> getTicketsByAppUserId(Integer appUserId) {
         return ticketRepository.findByAppUserId(appUserId).stream()
-                .map(ticketMapper::toTIcketDto)
+                .map(ticketMapper::toTicketDto)
                 .collect(Collectors.toList());
     }
 }
