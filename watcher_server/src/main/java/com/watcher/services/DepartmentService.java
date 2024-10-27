@@ -5,6 +5,8 @@ import com.watcher.mappers.DepartmentMapper;
 import com.watcher.models.Department;
 import com.watcher.repositories.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +29,11 @@ public class DepartmentService {
         return departmentRepository.findAll().stream()
                 .map(departmentMapper::toDepartmentDto)
                 .collect(Collectors.toList());
+    }
+
+    public Page<DepartmentDto> getAllDepartments(Pageable pageable) {
+        return departmentRepository.findAll(pageable)
+                .map(departmentMapper::toDepartmentDto);
     }
 
     public Optional<DepartmentDto> getDepartmentById(Integer id) {

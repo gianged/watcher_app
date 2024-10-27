@@ -28,7 +28,10 @@ export const Home = (): React.ReactElement => {
             <div className={"home-container"}>
                 <Navbar className={"top-navbar"} expand={"lg"}>
                     <Container fluid>
-                        <Navbar.Brand as={Link} to={"/app"} className={"brand"}>MyApp</Navbar.Brand>
+                        <Navbar.Brand as={Link} to={"/app"} className={"brand"}>
+                            <img src="/watcher_icon.png" alt="Watcher Icon" width="30" height="30" className={"me-2"} />
+                            Watcher App
+                        </Navbar.Brand>
                         <Navbar.Toggle aria-controls={"basic-navbar-nav"} />
                         <Navbar.Collapse id={"basic-navbar-nav"} className={"justify-content-end"}>
                             <Nav>
@@ -92,11 +95,13 @@ export const Home = (): React.ReactElement => {
                                         <FontAwesomeIcon icon={faUsers} className={"me-2"} />
                                         User Manage
                                     </Nav.Link>
-                                    <Nav.Link as={Link} to={"/app/announces"} active={location.pathname === "/app/announces"}>
+                                    <Nav.Link as={Link} to={"/app/announces"}
+                                              active={location.pathname === "/app/announces"}>
                                         <FontAwesomeIcon icon={faBullhorn} className={"me-2"} />
                                         Announcements
                                     </Nav.Link>
-                                    <Nav.Link as={Link} to={"/app/tickets"} active={location.pathname === "/app/tickets"}>
+                                    <Nav.Link as={Link} to={"/app/tickets"}
+                                              active={location.pathname === "/app/tickets"}>
                                         <FontAwesomeIcon icon={faTicketAlt} className={"me-2"} />
                                         Ticket Manage
                                     </Nav.Link>

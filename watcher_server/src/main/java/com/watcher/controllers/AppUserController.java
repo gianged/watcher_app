@@ -7,6 +7,8 @@ import com.watcher.models.WatcherUserDetails;
 import com.watcher.services.AppUserService;
 import com.watcher.services.WatcherUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -50,6 +52,12 @@ public class AppUserController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/paged")
+    public ResponseEntity<Page<AppUserDto>> getPagedUsers(Pageable pageable) {
+        Page<AppUserDto> users = appUserService.getAllUsers(pageable);
+        return ResponseEntity.ok(users);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<AppUserDto> getUserById(@PathVariable Integer id) {
         AppUser loggedInUser = getLoggedInUser();
@@ -60,7 +68,7 @@ public class AppUserController {
 
     @PostMapping
     public ResponseEntity<String> createUser(@RequestBody AppUserDto userDto) {
-         if (appUserService.usernameCheck(userDto.getUsername())) {
+        if (appUserService.usernameCheck(userDto.getUsername())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists");
         }
         AppUserDto createdUser = appUserService.createUser(userDto);

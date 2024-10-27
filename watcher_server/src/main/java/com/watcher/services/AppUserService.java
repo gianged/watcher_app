@@ -7,6 +7,8 @@ import com.watcher.models.Department;
 import com.watcher.repositories.AppUserRepository;
 import com.watcher.repositories.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,11 @@ public class AppUserService {
         return appUserRepository.findAll().stream()
                 .map(userMapper::toAppUserDto)
                 .collect(Collectors.toList());
+    }
+
+    public Page<AppUserDto> getAllUsers(Pageable pageable) {
+        return appUserRepository.findAll(pageable)
+                .map(userMapper::toAppUserDto);
     }
 
     public Optional<AppUserDto> getUserById(Integer id) {

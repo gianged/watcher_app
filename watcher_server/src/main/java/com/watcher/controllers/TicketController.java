@@ -3,6 +3,8 @@ package com.watcher.controllers;
 import com.watcher.dto.TicketDto;
 import com.watcher.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,11 +29,17 @@ public class TicketController {
         return ResponseEntity.ok(tickets);
     }
 
+    @GetMapping("/pages")
+    public ResponseEntity<Page<TicketDto>> getPagedTickets(Pageable pageable) {
+        Page<TicketDto> tickets = ticketService.getAllTickets(pageable);
+        return ResponseEntity.ok(tickets);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<TicketDto> getTicketById(@PathVariable Integer id) {
         Optional<TicketDto> ticket = ticketService.getTicketById(id);
         return ticket.map(ResponseEntity::ok)
-                     .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -44,7 +52,7 @@ public class TicketController {
     public ResponseEntity<TicketDto> updateTicket(@PathVariable Integer id, @RequestBody TicketDto ticketDto) {
         Optional<TicketDto> updatedTicket = ticketService.updateTicket(id, ticketDto);
         return updatedTicket.map(ResponseEntity::ok)
-                            .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

@@ -6,6 +6,8 @@ import com.watcher.models.RoleEnum;
 import com.watcher.models.WatcherUserDetails;
 import com.watcher.services.AnnounceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -53,6 +55,12 @@ public class AnnounceController {
             announces = announceService.getAnnouncesByDepartmentIncludingPublic(loggedInUser.getDepartment().getId());
         }
 
+        return ResponseEntity.ok(announces);
+    }
+
+    @GetMapping("/paged")
+    public ResponseEntity<Page<AnnounceDto>> getPagedAnnounces(Pageable pageable) {
+        Page<AnnounceDto> announces = announceService.getAllAnnounces(pageable);
         return ResponseEntity.ok(announces);
     }
 

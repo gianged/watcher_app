@@ -8,6 +8,8 @@ import com.watcher.models.Department;
 import com.watcher.repositories.AnnounceRepository;
 import com.watcher.repositories.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +34,11 @@ public class AnnounceService {
         return announceRepository.findAll().stream()
                 .map(announceMapper::toAnnounceDto)
                 .collect(Collectors.toList());
+    }
+
+    public Page<AnnounceDto> getAllAnnounces(Pageable pageable) {
+        return announceRepository.findAll(pageable)
+                .map(announceMapper::toAnnounceDto);
     }
 
     public Optional<AnnounceDto> getAnnounceById(Integer id) {

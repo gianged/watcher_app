@@ -24,30 +24,49 @@ export const Login = (): React.ReactElement => {
 
     //region Register hooks
 
+    const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
     const [registerUsername, setRegisterUsername] = useState<string>('');
     const [registerPassword, setRegisterPassword] = useState<string>('');
     const [registerConfirmPassword, setRegisterConfirmPassword] = useState<string>('');
-    const [registerError, setRegisterError] = useState<string | null>('');
+    const [registerError, setRegisterError] = useState<string | null>(null);
+
+    const validateRegisterFields = async (): Promise<boolean> => {
+        if (!registerUsername) {
+            setRegisterError('Username is required');
+            return false;
+        } else if (!registerPassword) {
+            setRegisterError('Password is required');
+            return false;
+        } else if (!registerConfirmPassword) {
+            setRegisterError('Confirm Password is required');
+            return false;
+        } else if (registerPassword !== registerConfirmPassword) {
+            setRegisterError('Passwords do not match');
+            return false;
+        } else if (registerPassword.length < 8) {
+            setRegisterError('Password must be at least 8 characters long');
+            return false;
+        } else if (await AuthenticateApi.checkUsername(registerUsername)) {
+            setRegisterError('Username already exists');
+            return false;
+        } else {
+            setRegisterError(null);
+            return true;
+        }
+    };
 
     useEffect(() => {
-        const timeoutId = setTimeout(async () => {
-            if (registerPassword !== registerConfirmPassword) {
-                setRegisterError('Password do not match');
-            } else if (registerPassword.length !== 0 && registerPassword.length < 8) {
-                setRegisterError('Password must be at least 8 characters long');
-            } else if (await AuthenticateApi.checkUsername(registerUsername)) {
-                setRegisterError('Username already exists');
-            } else {
-                setRegisterError(null);
-            }
-        }, 2000);
-
-        return () => clearTimeout(timeoutId);
-    }, [registerUsername, registerPassword, registerConfirmPassword]);
+        if (formSubmitted) {
+            const timeoutId = setTimeout(validateRegisterFields, 2000);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [registerUsername, registerPassword, registerConfirmPassword, formSubmitted]);
 
     const handleRegister = useCallback(async (e: FormEvent) => {
         e.preventDefault();
-        if (!registerError) {
+        setFormSubmitted(true);
+        const isValid = await validateRegisterFields();
+        if (isValid) {
             const response = await authenticateApi.register(registerUsername, registerPassword);
             if (response.success) {
                 await login(registerUsername, registerPassword);
@@ -55,7 +74,7 @@ export const Login = (): React.ReactElement => {
                 setRegisterError(response.message);
             }
         }
-    }, [registerError, registerUsername, registerPassword, login])
+    }, [registerUsername, registerPassword, login])
 
     //endregion
 

@@ -244,7 +244,16 @@ const AnnounceManage = (): React.ReactElement => {
                                     <Form.Control
                                         type="date"
                                         value={announceForm.startDate}
-                                        onChange={e => setAnnounceForm({...announceForm, startDate: e.target.value})}
+                                        onChange={e => {
+                                            const newStartDate = e.target.value;
+                                            let newEndDate = announceForm.endDate;
+                                            if (new Date(newEndDate) < new Date(newStartDate)) {
+                                                const adjustedEndDate = new Date(newStartDate);
+                                                adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
+                                                newEndDate = adjustedEndDate.toISOString().split('T')[0];
+                                            }
+                                            setAnnounceForm({...announceForm, startDate: newStartDate, endDate: newEndDate});
+                                        }}
                                     />
                                 </Form.Group>
 
@@ -253,7 +262,16 @@ const AnnounceManage = (): React.ReactElement => {
                                     <Form.Control
                                         type="date"
                                         value={announceForm.endDate}
-                                        onChange={e => setAnnounceForm({...announceForm, endDate: e.target.value})}
+                                        onChange={e => {
+                                            const newEndDate = e.target.value;
+                                            let newStartDate = announceForm.startDate;
+                                            if (new Date(newEndDate) < new Date(newStartDate)) {
+                                                const adjustedStartDate = new Date(newEndDate);
+                                                adjustedStartDate.setDate(adjustedStartDate.getDate() - 1);
+                                                newStartDate = adjustedStartDate.toISOString().split('T')[0];
+                                            }
+                                            setAnnounceForm({...announceForm, endDate: newEndDate, startDate: newStartDate});
+                                        }}
                                     />
                                 </Form.Group>
 

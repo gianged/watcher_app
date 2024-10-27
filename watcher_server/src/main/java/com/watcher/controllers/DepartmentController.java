@@ -3,6 +3,8 @@ package com.watcher.controllers;
 import com.watcher.dto.DepartmentDto;
 import com.watcher.services.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,12 @@ public class DepartmentController {
     @GetMapping
     public ResponseEntity<List<DepartmentDto>> getAllDepartments() {
         List<DepartmentDto> departments = departmentService.getAllDepartments();
+        return ResponseEntity.ok(departments);
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<DepartmentDto>> getAllDepartments(Pageable pageable) {
+        Page<DepartmentDto> departments = departmentService.getAllDepartments(pageable);
         return ResponseEntity.ok(departments);
     }
 
