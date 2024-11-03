@@ -7,7 +7,9 @@ import com.watcher.models.WatcherUserDetails;
 import com.watcher.services.AnnounceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -45,22 +47,39 @@ public class AnnounceController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AnnounceDto>> getAllAnnounces() {
-        AppUser loggedInUser = getLoggedInUser();
+    public ResponseEntity<List<AnnounceDto>> getAllAnnounces(
+            @RequestParam(required = false) String content,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+
         List<AnnounceDto> announces;
-
-        if (isSystemAdminOrDirector(loggedInUser)) {
-            announces = announceService.getAllAnnounces();
+        if (content != null && !content.isEmpty()) {
+            announces = announceService.searchAnnouncesByContent(content, sort);
         } else {
-            announces = announceService.getAnnouncesByDepartmentIncludingPublic(loggedInUser.getDepartment().getId());
+            announces = announceService.getAllAnnounces(sort);
         }
-
         return ResponseEntity.ok(announces);
     }
 
     @GetMapping("/paged")
-    public ResponseEntity<Page<AnnounceDto>> getPagedAnnounces(Pageable pageable) {
-        Page<AnnounceDto> announces = announceService.getAllAnnounces(pageable);
+    public ResponseEntity<Page<AnnounceDto>> getPagedAnnounces(
+            @RequestParam(required = false) String content,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<AnnounceDto> announces;
+        if (content != null && !content.isEmpty()) {
+            announces = announceService.searchPagedAnnouncesByContent(content, pageable);
+        } else {
+            announces = announceService.getPagedAnnounces(pageable);
+        }
         return ResponseEntity.ok(announces);
     }
 

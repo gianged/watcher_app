@@ -1,4 +1,4 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faExclamationCircle, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Form, Modal, Row } from "react-bootstrap";
@@ -6,6 +6,7 @@ import AnnounceManageApi from "../api/AnnounceManageApi";
 import EnumLoadApi from "../api/EnumLoadApi.ts";
 import TicketManageApi from "../api/TicketManageApi.ts";
 import useAuthenticationHeader from "../providers/AuthenticateHeaderProvider.tsx";
+import "./DashbroadComponent.scss";
 
 interface DashboardProps {
     role: number,
@@ -105,17 +106,18 @@ export const DashboardComponent: React.FC<DashboardProps> = ({role, department})
             <Row>
                 <Col>
                     <h2>Announcements</h2>
-                    <Row>
-                        {announcements.map((announce) => (
-                            <Col key={announce.id} sm={12} md={6} lg={4} className="mb-4">
-                                <Card>
-                                    <Card.Body>
+                    {announcements.map((announce) => (
+                        <Row key={announce.id} className="mb-2">
+                            <Col>
+                                <Card className="notification-row">
+                                    <Card.Body className="text-danger d-flex align-items-center">
+                                        <FontAwesomeIcon icon={faExclamationCircle} className="me-2" />
                                         <Card.Text>{announce.content}</Card.Text>
                                     </Card.Body>
                                 </Card>
                             </Col>
-                        ))}
-                    </Row>
+                        </Row>
+                    ))}
                 </Col>
             </Row>
             <Row>

@@ -2,7 +2,7 @@ import { faAngleLeft, faAngleRight, faEdit, faPlus, faTrash } from "@fortawesome
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import "./UserManage.scss"
-import { Button, Form, Modal, Table } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, Modal, Row, Table } from "react-bootstrap";
 import DepartmentManageApi from "../api/DepartmentManageApi.ts";
 import EnumLoadApi from "../api/EnumLoadApi.ts";
 import UserManageApi from "../api/UserManageApi.ts";
@@ -39,18 +39,23 @@ export const UserManage = (): React.ReactElement => {
     const [page, setPage] = useState(0);
     const [size] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
+    const [searchUsername, setSearchUsername] = useState("");
+    const [sortDir, setSortDir] = useState("desc");
 
     const rightPanelRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        fetchPagedUsers(page, size).then();
         fetchRoles().then();
         fetchDepartments().then();
-    }, [showRightPanel, showDeleteModal, page]);
+    }, [showRightPanel, showDeleteModal]);
 
-    const fetchPagedUsers = async (page: number, size: number) => {
+    useEffect(() => {
+        fetchPagedUsers(page, size, searchUsername, sortDir).then();
+    }, [page, searchUsername, sortDir]);
+
+    const fetchPagedUsers = async (page: number, size: number, username: string, sortDir: string) => {
         try {
-            const response = await UserManageApi.getPaged(authHeader, page, size);
+            const response = await UserManageApi.getPaged(authHeader, page, size, username, sortDir);
             if (response.success) {
                 setUserList(response.data.content);
                 setTotalPages(response.data.totalPages);
@@ -196,6 +201,28 @@ export const UserManage = (): React.ReactElement => {
     return (
         <>
             <div className="user-manage-container">
+                <Row className="align-items-end">
+                    <Col xs={"auto"}>
+                        <InputGroup>
+                            <Form.Control
+                                placeholder="Search by username"
+                                value={searchUsername}
+                                onChange={(e) => setSearchUsername(e.target.value)}
+                            />
+                            <Button variant="outline-secondary"
+                                    onClick={() => fetchPagedUsers(page, size, searchUsername, sortDir)}>
+                                Search
+                            </Button>
+                        </InputGroup>
+                    </Col>
+                    <Col xs={"auto"}>
+                        <Button variant="outline-secondary"
+                                onClick={() => setSortDir(sortDir === "desc" ? "asc" : "desc")}>
+                            Sort by ID ({sortDir})
+                        </Button>
+                    </Col>
+                </Row>
+
                 <Button className={"add-button"} onClick={handleAddClick}>
                     <FontAwesomeIcon icon={faPlus} className={"me-2"} />
                     Add...
@@ -203,6 +230,7 @@ export const UserManage = (): React.ReactElement => {
                 <Table striped bordered hover>
                     <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Username</th>
                         <th>Department</th>
                         <th>Role</th>
@@ -213,6 +241,7 @@ export const UserManage = (): React.ReactElement => {
                     <tbody>
                     {userList.map(u => (
                         <tr key={u.id}>
+                            <td>{u.id}</td>
                             <td>{u.username}</td>
                             <td>{getDepartmentNameById(u.departmentId)}</td>
                             <td>{roleLevels.find(role => role.id === u.roleLevel)?.roleName}</td>

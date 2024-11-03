@@ -1,7 +1,7 @@
 import { faAngleLeft, faAngleRight, faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Form, Modal, Table } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, Modal, Row, Table } from "react-bootstrap";
 import AnnounceManageApi from "../api/AnnounceManageApi";
 import DepartmentManageApi from "../api/DepartmentManageApi";
 import useAuthenticationHeader from "../providers/AuthenticateHeaderProvider";
@@ -37,15 +37,17 @@ const AnnounceManage = (): React.ReactElement => {
     const [page, setPage] = useState(0);
     const [size] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
+    const [searchContent, setSearchContent] = useState("");
+    const [sortDir, setSortDir] = useState("desc");
 
     const rightPanelRef = useRef<HTMLDivElement>(null);
 
-    const fetchPagedAnnouncements = async (page: number, size: number) => {
+    const fetchPagedAnnouncements = async (page: number, size: number, content: string, sortDir: string) => {
         try {
-            const response = await AnnounceManageApi.getPaged(authHeader, page, size);
+            const response = await AnnounceManageApi.getPaged(authHeader, page, size, content, sortDir);
             if (response.success) {
-                setAnnounceList(response.data.content);  // Assuming response.data has a 'content' field
-                setTotalPages(response.data.totalPages); // Assuming response.data has a 'totalPages' field
+                setAnnounceList(response.data.content);
+                setTotalPages(response.data.totalPages);
             }
         } catch (error) {
             console.error("Failed to fetch paged announcements:", error);
@@ -64,9 +66,9 @@ const AnnounceManage = (): React.ReactElement => {
     };
 
     useEffect(() => {
-        fetchPagedAnnouncements(page, size).then();
+        fetchPagedAnnouncements(page, size, searchContent, sortDir).then();
         fetchDepartments().then();
-    }, [showRightPanel, showDeleteModal, page, size]);
+    }, [page, size, searchContent, sortDir]);
 
     const handleAddClick = () => {
         setIsEditing(false);
@@ -194,6 +196,28 @@ const AnnounceManage = (): React.ReactElement => {
     return (
         <>
             <div className="announce-manage-container">
+                <Row className="align-items-end">
+                    <Col xs={"auto"}>
+                        <InputGroup>
+                            <Form.Control
+                                placeholder="Search by content"
+                                value={searchContent}
+                                onChange={(e) => setSearchContent(e.target.value)}
+                            />
+                            <Button variant="outline-secondary"
+                                    onClick={() => fetchPagedAnnouncements(page, size, searchContent, sortDir)}>
+                                Search
+                            </Button>
+                        </InputGroup>
+                    </Col>
+                    <Col xs={"auto"}>
+                        <Button variant="outline-secondary"
+                                onClick={() => setSortDir(sortDir === "desc" ? "asc" : "desc")}>
+                            Sort by ID ({sortDir})
+                        </Button>
+                    </Col>
+                </Row>
+
                 <Button className={"add-button"} onClick={handleAddClick}>
                     <FontAwesomeIcon icon={faPlus} className={"me-2"} />
                     Add...
@@ -201,6 +225,7 @@ const AnnounceManage = (): React.ReactElement => {
                 <Table striped bordered hover>
                     <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Content</th>
                         <th>Start Date</th>
                         <th>End Date</th>
@@ -213,6 +238,7 @@ const AnnounceManage = (): React.ReactElement => {
                     <tbody>
                     {announceList.map(announce => (
                         <tr key={announce.id}>
+                            <td>{announce.id}</td>
                             <td>{announce.content}</td>
                             <td>{new Date(announce.startDate).toLocaleDateString()}</td>
                             <td>{new Date(announce.endDate).toLocaleDateString()}</td>

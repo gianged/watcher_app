@@ -3,13 +3,13 @@ package com.watcher.services;
 import com.watcher.dto.AnnounceDto;
 import com.watcher.mappers.AnnounceMapper;
 import com.watcher.models.Announce;
-import com.watcher.models.AppUser;
 import com.watcher.models.Department;
 import com.watcher.repositories.AnnounceRepository;
 import com.watcher.repositories.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,15 +30,24 @@ public class AnnounceService {
         this.departmentRepository = departmentRepository;
     }
 
-    public List<AnnounceDto> getAllAnnounces() {
-        return announceRepository.findAll().stream()
+    public List<AnnounceDto> getAllAnnounces(Sort sort) {
+        return announceRepository.findAll(sort).stream()
                 .map(announceMapper::toAnnounceDto)
                 .collect(Collectors.toList());
     }
 
-    public Page<AnnounceDto> getAllAnnounces(Pageable pageable) {
-        return announceRepository.findAll(pageable)
-                .map(announceMapper::toAnnounceDto);
+    public Page<AnnounceDto> getPagedAnnounces(Pageable pageable) {
+        return announceRepository.findAll(pageable).map(announceMapper::toAnnounceDto);
+    }
+
+    public List<AnnounceDto> searchAnnouncesByContent(String content, Sort sort) {
+        return announceRepository.findAllByContentContainingIgnoreCase(content, sort).stream()
+                .map(announceMapper::toAnnounceDto)
+                .collect(Collectors.toList());
+    }
+
+    public Page<AnnounceDto> searchPagedAnnouncesByContent(String content, Pageable pageable) {
+        return announceRepository.findAllByContentContainingIgnoreCase(content, pageable).map(announceMapper::toAnnounceDto);
     }
 
     public Optional<AnnounceDto> getAnnounceById(Integer id) {

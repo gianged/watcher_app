@@ -9,6 +9,7 @@ import com.watcher.repositories.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,15 +33,24 @@ public class AppUserService {
         this.departmentRepository = departmentRepository;
     }
 
-    public List<AppUserDto> getAllUsers() {
-        return appUserRepository.findAll().stream()
+    public List<AppUserDto> getAllUsers(Sort sort) {
+        return appUserRepository.findAll(sort).stream()
                 .map(userMapper::toAppUserDto)
                 .collect(Collectors.toList());
     }
 
     public Page<AppUserDto> getAllUsers(Pageable pageable) {
-        return appUserRepository.findAll(pageable)
-                .map(userMapper::toAppUserDto);
+        return appUserRepository.findAll(pageable).map(userMapper::toAppUserDto);
+    }
+
+    public List<AppUserDto> searchUsersByUsername(String username, Sort sort) {
+        return appUserRepository.findAllByUsernameContainingIgnoreCase(username, sort).stream()
+                .map(userMapper::toAppUserDto)
+                .collect(Collectors.toList());
+    }
+
+    public Page<AppUserDto> searchPagedUsersByUsername(String username, Pageable pageable) {
+        return appUserRepository.findAllByUsernameContainingIgnoreCase(username, pageable).map(userMapper::toAppUserDto);
     }
 
     public Optional<AppUserDto> getUserById(Integer id) {

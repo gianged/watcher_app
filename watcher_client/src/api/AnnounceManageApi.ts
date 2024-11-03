@@ -3,13 +3,18 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:8081/watcher/manage/announces";
 
 const AnnounceManageApi = {
-    getPaged: async (authHeader: { Authorization: string }, page: number, size: number) => {
+    getPaged: async (authHeader: {
+        Authorization: string
+    }, page: number, size: number, content: string = "", sortDir: string = "desc") => {
         try {
             const response = await axios.get(`${API_BASE_URL}/paged`, {
                 headers: authHeader,
                 params: {
-                    page: page,
-                    size: size
+                    content,
+                    page,
+                    size,
+                    sortBy: "id",
+                    sortDir
                 }
             });
 

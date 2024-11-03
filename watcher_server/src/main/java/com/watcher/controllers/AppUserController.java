@@ -8,7 +8,9 @@ import com.watcher.services.AppUserService;
 import com.watcher.services.WatcherUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -47,14 +49,35 @@ public class AppUserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AppUserDto>> getAllUsers() {
-        List<AppUserDto> users = appUserService.getAllUsers();
+    public ResponseEntity<List<AppUserDto>> getAllUsers(
+            @RequestParam(required = false) String username,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+        List<AppUserDto> users;
+        if (username != null && !username.isEmpty()) {
+            users = appUserService.searchUsersByUsername(username, sort);
+        } else {
+            users = appUserService.getAllUsers(sort);
+        }
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/paged")
-    public ResponseEntity<Page<AppUserDto>> getPagedUsers(Pageable pageable) {
-        Page<AppUserDto> users = appUserService.getAllUsers(pageable);
+    public ResponseEntity<Page<AppUserDto>> getPagedUsers(
+            @RequestParam(required = false) String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<AppUserDto> users;
+        if (username != null && !username.isEmpty()) {
+            users = appUserService.searchPagedUsersByUsername(username, pageable);
+        } else {
+            users = appUserService.getAllUsers(pageable);
+        }
         return ResponseEntity.ok(users);
     }
 

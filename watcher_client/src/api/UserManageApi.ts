@@ -9,29 +9,28 @@ interface UserManageApiResponse<T> {
 }
 
 const UserManageApi = {
-    getPaged: async (authHeader: {
-        Authorization: string
-    }, page: number, size: number): Promise<UserManageApiResponse<any>> => {
+    getPaged: async (authHeader: { Authorization: string }, page: number, size: number, username: string = "", sortDir: string = "desc"): Promise<UserManageApiResponse<any>> => {
         try {
-            const response = await axios.get(
-                `${API_BASE_URL}/paged`, {
-                    headers: authHeader,
-                    params: {
-                        page: page,
-                        size: size
-                    }
+            const response = await axios.get(`${API_BASE_URL}/paged`, {
+                headers: authHeader,
+                params: {
+                    username,
+                    page,
+                    size,
+                    sortBy: "id",
+                    sortDir
                 }
-            );
+            });
             return {
                 success: true,
-                message: "Users fetched successfully",
+                message: "Paged users fetched successfully",
                 data: response.data
             }
         } catch (error) {
-            console.error("Failed to fetch users:", error);
+            console.error("Failed to fetch paged users:", error);
             return {
                 success: false,
-                message: "Failed to fetch users"
+                message: "Failed to fetch paged users"
             }
         }
     },
