@@ -1,10 +1,13 @@
 package com.watcher.controllers;
 
 import com.watcher.dto.TicketDto;
+import com.watcher.models.RoleEnum;
+import com.watcher.models.TicketStatusEnum;
 import com.watcher.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,15 +27,35 @@ public class TicketController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TicketDto>> getAllTickets() {
-        List<TicketDto> tickets = ticketService.getAllTickets();
+    public ResponseEntity<List<TicketDto>> getAllTickets(@RequestParam(defaultValue = "status") String sortBy) {
+        List<TicketDto> tickets = ticketService.getAllTickets(sortBy);
         return ResponseEntity.ok(tickets);
     }
 
     @GetMapping("/paged")
-    public ResponseEntity<Page<TicketDto>> getPagedTickets(Pageable pageable) {
-        Page<TicketDto> tickets = ticketService.getAllTickets(pageable);
+    public ResponseEntity<Page<TicketDto>> getPagedTickets(Pageable pageable, @RequestParam(defaultValue = "status") String sortBy) {
+        Page<TicketDto> tickets = ticketService.getAllTickets(pageable, sortBy);
         return ResponseEntity.ok(tickets);
+    }
+
+    @GetMapping("/tickets-dashboard")
+    public ResponseEntity<List<TicketDto>> getTicketsDashboard(@RequestParam Integer userRole, @RequestParam Integer userId) {
+        List<TicketDto> tickets;
+
+        if (userRole.equals(RoleEnum.SYSTEM_ADMIN.getId()) || userRole.equals(RoleEnum.DIRECTOR.getId())) {
+            tickets = ticketService.getAllTickets("status");
+        } else if (userRole.equals(RoleEnum.MANAGER.getId()) || userRole.equals(RoleEnum.USER.getId())) {
+            tickets = ticketService.getTicketsByAppUserId(userId);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        List<TicketDto> filteredTickets = tickets.stream()
+                .filter(ticket -> !ticket.status().equals(TicketStatusEnum.CLOSED.getId()))
+                .sorted((t1, t2) -> t1.status().compareTo(t2.status()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(filteredTickets);
     }
 
     @GetMapping("/{id}")

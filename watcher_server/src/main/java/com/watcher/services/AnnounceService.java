@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -87,14 +88,16 @@ public class AnnounceService {
                 });
     }
 
-    public List<AnnounceDto> getAnnouncesByDepartment(Integer departmentId) {
-        return announceRepository.findByDepartment_Id(departmentId).stream()
+    public List<AnnounceDto> getAllValidActiveAnnounces(Sort sort) {
+        Instant currentDate = Instant.now();
+        return announceRepository.findAllValidActiveAnnounces(currentDate, sort).stream()
                 .map(announceMapper::toAnnounceDto)
                 .collect(Collectors.toList());
     }
 
-    public List<AnnounceDto> getAnnouncesByDepartmentIncludingPublic(Integer departmentId) {
-        return announceRepository.findByDepartment_IdOrDepartmentIsNullAndIsPublicTrue(departmentId).stream()
+    public List<AnnounceDto> getAnnouncesByDepartmentIncludingPublic(Integer departmentId, Sort sort) {
+        Instant currentDate = Instant.now();
+        return announceRepository.findValidActiveAnnounces(departmentId, currentDate, sort).stream()
                 .map(announceMapper::toAnnounceDto)
                 .collect(Collectors.toList());
     }

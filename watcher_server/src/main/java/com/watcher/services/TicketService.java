@@ -6,7 +6,9 @@ import com.watcher.repositories.TicketRepository;
 import com.watcher.mappers.TicketMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,14 +27,17 @@ public class TicketService {
         this.ticketMapper = ticketMapper;
     }
 
-    public List<TicketDto> getAllTickets() {
-        return ticketRepository.findAll().stream()
+    public List<TicketDto> getAllTickets(String sortBy) {
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
+        return ticketRepository.findAll(sort).stream()
                 .map(ticketMapper::toTicketDto)
                 .collect(Collectors.toList());
     }
 
-    public Page<TicketDto> getAllTickets(Pageable pageable) {
-        Page<Ticket> tickets = ticketRepository.findAll(pageable);
+    public Page<TicketDto> getAllTickets(Pageable pageable, String sortBy) {
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        Page<Ticket> tickets = ticketRepository.findAll(sortedPageable);
         return tickets.map(ticketMapper::toTicketDto);
     }
 

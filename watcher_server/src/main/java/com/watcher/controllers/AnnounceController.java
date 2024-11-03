@@ -83,6 +83,24 @@ public class AnnounceController {
         return ResponseEntity.ok(announces);
     }
 
+    @GetMapping("/announces-dashboard")
+    public ResponseEntity<List<AnnounceDto>> getAnnouncesByRoleAndDepartment(
+            @RequestParam Integer roleId,
+            @RequestParam Integer departmentId) {
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+
+        List<AnnounceDto> announces;
+
+        if (roleId.equals(RoleEnum.SYSTEM_ADMIN.getId()) || roleId.equals(RoleEnum.DIRECTOR.getId())) {
+            announces = announceService.getAllValidActiveAnnounces(sort);
+        } else {
+            announces = announceService.getAnnouncesByDepartmentIncludingPublic(departmentId, sort);
+        }
+
+        return ResponseEntity.ok(announces);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<AnnounceDto> getAnnounceById(@PathVariable Integer id) {
         AppUser loggedInUser = getLoggedInUser();

@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import { useCookies } from "react-cookie";
 import authenticateApi from '../api/AuthenticateApi';
 import "./Profile.scss";
 
 const Profile: React.FC = () => {
-    const [cookies] = useCookies(['user']);
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
     const [id, setId] = useState<string | null>(null);
     const [newPassword, setNewPassword] = useState<string>('');
     const [newProfilePicture, setNewProfilePicture] = useState<File | null>(null);
     const [message, setMessage] = useState<string>('');
 
     useEffect(() => {
-        if (cookies.user && cookies.user.id) {
-            setId(cookies.user.id);
+        if (user && user.id) {
+            setId(user.id);
         }
-    }, [cookies]);
+    }, [user]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -24,15 +23,21 @@ const Profile: React.FC = () => {
     };
 
     const handleUpdate = async () => {
-        if (id) {
-            const response = await authenticateApi.updateUser(id, newPassword, newProfilePicture ?? undefined);
-            if (response.success) {
-                setMessage('User updated successfully');
-            } else {
-                setMessage('Failed to update user');
-            }
-        } else {
+        if (!id) {
             setMessage('User ID is missing');
+            return;
+        }
+
+        if (!newPassword && !newProfilePicture) {
+            setMessage('');
+            return;
+        }
+
+        const response = await authenticateApi.updateUser(id, newPassword, newProfilePicture ?? undefined);
+        if (response.success) {
+            setMessage('User updated successfully');
+        } else {
+            setMessage('Failed to update user');
         }
     };
 

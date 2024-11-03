@@ -11,13 +11,14 @@ type TicketManageApiResponse<T> = {
 const TicketManageApi = {
         getPaged: async (authHeader: {
             Authorization: string
-        }, page: number, size: number): Promise<TicketManageApiResponse<any>> => {
+        }, page: number, size: number, sortBy: string = "status"): Promise<TicketManageApiResponse<any>> => {
             try {
                 const response = await axios.get(`${API_BASE_URL}/paged`, {
                     headers: authHeader,
                     params: {
                         page: page,
-                        size: size
+                        size: size,
+                        sortBy: sortBy
                     }
                 });
                 return {
@@ -34,9 +35,16 @@ const TicketManageApi = {
             }
         },
 
-        getAll: async (authHeader: { Authorization: string }): Promise<TicketManageApiResponse<any>> => {
+        getAll: async (authHeader: {
+            Authorization: string
+        }, sortBy: string = "status"): Promise<TicketManageApiResponse<any>> => {
             try {
-                const response = await axios.get(API_BASE_URL, {headers: authHeader});
+                const response = await axios.get(API_BASE_URL, {
+                    headers: authHeader,
+                    params: {
+                        sortBy: sortBy
+                    }
+                });
                 return {
                     success: true,
                     message: "Tickets fetched successfully",
@@ -47,6 +55,31 @@ const TicketManageApi = {
                 return {
                     success: false,
                     message: "Failed to fetch tickets"
+                };
+            }
+        },
+
+        getTicketsDashboard: async (authHeader: {
+            Authorization: string
+        }, userRole: number, userId: number) => {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/tickets-dashboard`, {
+                    headers: authHeader,
+                    params: {
+                        userRole,
+                        userId
+                    }
+                });
+                return {
+                    success: true,
+                    message: "Tickets dashboard fetched successfully",
+                    data: response.data
+                };
+            } catch (error) {
+                console.error("Failed to fetch tickets dashboard:", error);
+                return {
+                    success: false,
+                    message: "Failed to fetch tickets dashboard"
                 };
             }
         },

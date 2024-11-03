@@ -32,6 +32,32 @@ const AnnounceManageApi = {
         }
     },
 
+    getAnnouncesByRoleAndDepartment: async (authHeader: {
+        Authorization: string
+    }, roleId: number, departmentId: number) => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/announces-dashboard`, {
+                headers: authHeader,
+                params: {
+                    roleId,
+                    departmentId
+                }
+            });
+
+            return {
+                success: true,
+                message: "Announcements fetched successfully",
+                data: response.data
+            };
+        } catch (error) {
+            console.error("Failed to fetch announcements by role and department:", error);
+            return {
+                success: false,
+                message: "Failed to fetch announcements by role and department"
+            };
+        }
+    },
+
     getAll: async (authHeader: { Authorization: string }) => {
         try {
             const response = await axios.get(API_BASE_URL, {

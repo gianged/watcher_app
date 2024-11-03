@@ -25,15 +25,11 @@ export const DashboardComponent: React.FC<DashboardProps> = ({role, department})
     const userId = user?.id;
 
     useEffect(() => {
-        const fetchAnnouncements = async () => {
+        const fetchAnnouncementsByRoleAndDepartment = async () => {
             try {
-                const response = await AnnounceManageApi.getAll(authHeader);
-
+                const response = await AnnounceManageApi.getAnnouncesByRoleAndDepartment(authHeader, role, department);
                 if (response.success) {
-                    const filteredAnnouncements = response.data.filter((announce: any) =>
-                        announce.isPublic || (role >= 3 && role <= 4 && announce.departmentId === department)
-                    );
-                    setAnnouncements(filteredAnnouncements);
+                    setAnnouncements(response.data);
                 }
             } catch (error) {
                 console.error("Failed to fetch announcements:", error);
@@ -42,9 +38,7 @@ export const DashboardComponent: React.FC<DashboardProps> = ({role, department})
 
         const fetchTickets = async () => {
             try {
-                const response = role === 1 || role === 2
-                    ? await TicketManageApi.getAll(authHeader)
-                    : await TicketManageApi.getTicketsByAppUserId(authHeader, userId);
+                const response = await TicketManageApi.getTicketsDashboard(authHeader, role, userId);
 
                 if (response.success) {
                     setTickets(response.data);
@@ -67,7 +61,7 @@ export const DashboardComponent: React.FC<DashboardProps> = ({role, department})
 
         fetchTicketStatuses().then();
         fetchTickets().then();
-        fetchAnnouncements().then();
+        fetchAnnouncementsByRoleAndDepartment().then();
     }, []);
 
     const handleShowModal = () => setShowModal(true);

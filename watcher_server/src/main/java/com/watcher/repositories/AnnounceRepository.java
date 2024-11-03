@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 
 @Repository
@@ -21,7 +22,9 @@ public interface AnnounceRepository extends JpaRepository<Announce, Integer> {
     @Query("SELECT a FROM Announce a WHERE LOWER(CAST(a.content AS string)) LIKE LOWER(CONCAT('%', :content, '%'))")
     List<Announce> findAllByContentContainingIgnoreCase(@Param("content") String content, Sort sort);
 
-    List<Announce> findByDepartment_Id(Integer departmentId);
+    @Query("SELECT a FROM Announce a WHERE a.isActive = true AND a.startDate <= :currentDate AND a.endDate >= :currentDate")
+    List<Announce> findAllValidActiveAnnounces(@Param("currentDate") Instant currentDate, Sort sort);
 
-    List<Announce> findByDepartment_IdOrDepartmentIsNullAndIsPublicTrue(Integer departmentId);
+    @Query("SELECT a FROM Announce a WHERE (a.department.id = :departmentId OR a.isPublic = true) AND a.startDate <= :currentDate AND a.endDate >= :currentDate AND a.isActive = true")
+    List<Announce> findValidActiveAnnounces(@Param("departmentId") Integer departmentId, @Param("currentDate") Instant currentDate, Sort sort);
 }
