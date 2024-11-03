@@ -9,6 +9,31 @@ type TicketManageApiResponse<T> = {
 };
 
 const TicketManageApi = {
+        getPaged: async (authHeader: {
+            Authorization: string
+        }, page: number, size: number): Promise<TicketManageApiResponse<any>> => {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/paged`, {
+                    headers: authHeader,
+                    params: {
+                        page: page,
+                        size: size
+                    }
+                });
+                return {
+                    success: true,
+                    message: "Paged tickets fetched successfully",
+                    data: response.data
+                };
+            } catch (error) {
+                console.error("Failed to fetch paged tickets:", error);
+                return {
+                    success: false,
+                    message: "Failed to fetch paged tickets"
+                };
+            }
+        },
+
         getAll: async (authHeader: { Authorization: string }): Promise<TicketManageApiResponse<any>> => {
             try {
                 const response = await axios.get(API_BASE_URL, {headers: authHeader});

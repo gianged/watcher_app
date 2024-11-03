@@ -29,7 +29,7 @@ public class TicketController {
         return ResponseEntity.ok(tickets);
     }
 
-    @GetMapping("/pages")
+    @GetMapping("/paged")
     public ResponseEntity<Page<TicketDto>> getPagedTickets(Pageable pageable) {
         Page<TicketDto> tickets = ticketService.getAllTickets(pageable);
         return ResponseEntity.ok(tickets);

@@ -1,4 +1,4 @@
-import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faAngleLeft, faAngleRight, faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Button, Form, Modal, Table } from "react-bootstrap";
@@ -34,47 +34,53 @@ const TicketManage = (): React.ReactElement => {
     const [ticketToDelete, setTicketToDelete] = useState<number | null>(null);
     const [ticketStatuses, setTicketStatuses] = useState<any[]>([]);
 
+    const [page, setPage] = useState(0);
+    const [size] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
+
     const rightPanelRef = useRef<HTMLDivElement>(null);
 
-
     useEffect(() => {
-        const fetchTickets = async () => {
-            try {
-                const response = await TicketManageApi.getAll(authHeader);
-                if (response.success) {
-                    setTicketList(response.data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch tickets:", error);
-            }
-        };
-
-        const fetchTicketStatuses = async () => {
-            try {
-                const response = await EnumLoadApi.getTicketStatus();
-                if (response.success) {
-                    setTicketStatuses(response.data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch username:", error);
-            }
-        };
-
-        const fetchUsers = async () => {
-            try {
-                const response = await UserManageApi.getAll(authHeader);
-                if (response.success) {
-                    setUserList(response.data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch users:", error);
-            }
-        };
-
-        fetchTickets().then();
+        fetchPagedTickets(page, size).then();
         fetchTicketStatuses().then();
         fetchUsers().then();
-    }, [showRightPanel, showDeleteModal]);
+    }, [showRightPanel, showDeleteModal, page]);
+
+    const fetchPagedTickets = async (page: number, size: number) => {
+        try {
+            const response = await TicketManageApi.getPaged(authHeader, page, size);
+            if (response.success) {
+                setTicketList(response.data.content);
+                setTotalPages(response.data.totalPages);
+            } else {
+                console.error("Failed to fetch paged tickets:", response.message);
+            }
+        } catch (error) {
+            console.error("Failed to fetch paged tickets:", error);
+        }
+    };
+
+    const fetchTicketStatuses = async () => {
+        try {
+            const response = await EnumLoadApi.getTicketStatus();
+            if (response.success) {
+                setTicketStatuses(response.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch ticket statuses:", error);
+        }
+    };
+
+    const fetchUsers = async () => {
+        try {
+            const response = await UserManageApi.getAll(authHeader);
+            if (response.success) {
+                setUserList(response.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch users:", error);
+        }
+    };
 
     const getStatusNameById = (id: number): string => {
         const status = ticketStatuses.find((status: any) => status.id === id);
@@ -161,6 +167,12 @@ const TicketManage = (): React.ReactElement => {
         }
     };
 
+    const handlePageChange = (newPage: number) => {
+        if (newPage >= 0 && newPage < totalPages) {
+            setPage(newPage);
+        }
+    };
+
     return (
         <div className="ticket-manage-container">
             <Button className={"add-button"} onClick={handleAddClick}>
@@ -198,6 +210,16 @@ const TicketManage = (): React.ReactElement => {
                 ))}
                 </tbody>
             </Table>
+
+            <div className="pagination-controls">
+                <Button onClick={() => handlePageChange(page - 1)} disabled={page === 0}>
+                    <FontAwesomeIcon icon={faAngleLeft} />
+                </Button>
+                <span>Page {page + 1} of {totalPages}</span>
+                <Button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages - 1}>
+                    <FontAwesomeIcon icon={faAngleRight} />
+                </Button>
+            </div>
 
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
                 <Modal.Header closeButton>

@@ -1,4 +1,4 @@
-import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faAngleLeft, faAngleRight, faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Form, Modal, Table } from "react-bootstrap";
@@ -34,35 +34,39 @@ const AnnounceManage = (): React.ReactElement => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [announceToDelete, setAnnounceToDelete] = useState<any | null>(null);
 
+    const [page, setPage] = useState(0);
+    const [size] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
+
     const rightPanelRef = useRef<HTMLDivElement>(null);
 
-    // Fetch announcements and departments on component mount
+    const fetchPagedAnnouncements = async (page: number, size: number) => {
+        try {
+            const response = await AnnounceManageApi.getPaged(authHeader, page, size);
+            if (response.success) {
+                setAnnounceList(response.data.content);  // Assuming response.data has a 'content' field
+                setTotalPages(response.data.totalPages); // Assuming response.data has a 'totalPages' field
+            }
+        } catch (error) {
+            console.error("Failed to fetch paged announcements:", error);
+        }
+    };
+
+    const fetchDepartments = async () => {
+        try {
+            const response = await DepartmentManageApi.getAll(authHeader);
+            if (response.success) {
+                setDepartments(response.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch departments:", error);
+        }
+    };
+
     useEffect(() => {
-        const fetchAnnouncements = async () => {
-            try {
-                const response = await AnnounceManageApi.getAll(authHeader);
-                if (response.success) {
-                    setAnnounceList(response.data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch announcements:", error);
-            }
-        };
-
-        const fetchDepartments = async () => {
-            try {
-                const response = await DepartmentManageApi.getAll(authHeader);
-                if (response.success) {
-                    setDepartments(response.data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch departments:", error);
-            }
-        };
-
-        fetchAnnouncements().then();
+        fetchPagedAnnouncements(page, size).then();
         fetchDepartments().then();
-    }, [showRightPanel, showDeleteModal]);
+    }, [showRightPanel, showDeleteModal, page, size]);
 
     const handleAddClick = () => {
         setIsEditing(false);
@@ -163,6 +167,12 @@ const AnnounceManage = (): React.ReactElement => {
         }
     };
 
+    const handlePageChange = (newPage: number) => {
+        if (newPage >= 0 && newPage < totalPages) {
+            setPage(newPage);
+        }
+    };
+
     const handleClickOutside = (event: MouseEvent) => {
         if (rightPanelRef.current && !rightPanelRef.current.contains(event.target as Node)) {
             setShowRightPanel(false);
@@ -252,7 +262,11 @@ const AnnounceManage = (): React.ReactElement => {
                                                 adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
                                                 newEndDate = adjustedEndDate.toISOString().split('T')[0];
                                             }
-                                            setAnnounceForm({...announceForm, startDate: newStartDate, endDate: newEndDate});
+                                            setAnnounceForm({
+                                                ...announceForm,
+                                                startDate: newStartDate,
+                                                endDate: newEndDate
+                                            });
                                         }}
                                     />
                                 </Form.Group>
@@ -270,7 +284,11 @@ const AnnounceManage = (): React.ReactElement => {
                                                 adjustedStartDate.setDate(adjustedStartDate.getDate() - 1);
                                                 newStartDate = adjustedStartDate.toISOString().split('T')[0];
                                             }
-                                            setAnnounceForm({...announceForm, endDate: newEndDate, startDate: newStartDate});
+                                            setAnnounceForm({
+                                                ...announceForm,
+                                                endDate: newEndDate,
+                                                startDate: newStartDate
+                                            });
                                         }}
                                     />
                                 </Form.Group>
@@ -328,6 +346,16 @@ const AnnounceManage = (): React.ReactElement => {
                     </div>
                 )}
 
+                <div className="pagination-controls">
+                    <Button onClick={() => handlePageChange(page - 1)} disabled={page === 0}>
+                        <FontAwesomeIcon icon={faAngleLeft} />
+                    </Button>
+                    <span>Page {page + 1} of {totalPages}</span>
+                    <Button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages - 1}>
+                        <FontAwesomeIcon icon={faAngleRight} />
+                    </Button>
+                </div>
+
                 <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
                     <Modal.Header closeButton>
                         <Modal.Title>Confirm Delete</Modal.Title>
@@ -340,7 +368,8 @@ const AnnounceManage = (): React.ReactElement => {
                 </Modal>
             </div>
         </>
-    );
+    )
+        ;
 }
 
 export default AnnounceManage;

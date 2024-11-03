@@ -3,6 +3,30 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:8081/watcher/manage/announces";
 
 const AnnounceManageApi = {
+    getPaged: async (authHeader: { Authorization: string }, page: number, size: number) => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/paged`, {
+                headers: authHeader,
+                params: {
+                    page: page,
+                    size: size
+                }
+            });
+
+            return {
+                success: true,
+                message: "Paged announcements fetched successfully",
+                data: response.data
+            };
+        } catch (error) {
+            console.error("Failed to fetch paged announcements:", error);
+            return {
+                success: false,
+                message: "Failed to fetch paged announcements"
+            };
+        }
+    },
+
     getAll: async (authHeader: { Authorization: string }) => {
         try {
             const response = await axios.get(API_BASE_URL, {

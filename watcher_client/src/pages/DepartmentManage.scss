@@ -8,3 +8,39 @@
     margin-right: 4px;
   }
 }
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+
+  button {
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+  }
+
+  span {
+    margin: 0 10px;
+  }
+
+  input {
+    width: 60px;
+    text-align: center;
+    margin: 0 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+}

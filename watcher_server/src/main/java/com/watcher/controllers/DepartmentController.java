@@ -28,7 +28,7 @@ public class DepartmentController {
         return ResponseEntity.ok(departments);
     }
 
-    @GetMapping("/page")
+    @GetMapping("/paged")
     public ResponseEntity<Page<DepartmentDto>> getAllDepartments(Pageable pageable) {
         Page<DepartmentDto> departments = departmentService.getAllDepartments(pageable);
         return ResponseEntity.ok(departments);

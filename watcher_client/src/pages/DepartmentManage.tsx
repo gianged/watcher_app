@@ -1,4 +1,4 @@
-import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faAngleLeft, faAngleRight, faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { Button, Form, Modal, Table } from "react-bootstrap";
@@ -16,19 +16,25 @@ const DepartmentManage = (): React.ReactElement => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [departmentToDelete, setDepartmentToDelete] = useState<string | null>(null);
 
+    const [page, setPage] = useState(0);
+    const [size] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
+
     useEffect(() => {
-        const fetchDepartments = async () => {
-            try {
-                const response = await DepartmentManageApi.getAll(authHeader);
-                if (response.success) {
-                    setTableList(response.data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch departments:", error);
+        fetchDepartments(page, size).then();
+    }, [showModal, showDeleteModal, page]);
+
+    const fetchDepartments = async (page: number, size: number) => {
+        try {
+            const response = await DepartmentManageApi.getPaged(authHeader, page, size);
+            if (response.success) {
+                setTableList(response.data.content);
+                setTotalPages(response.data.totalPages);
             }
-        };
-        fetchDepartments().then();
-    }, [showModal, showDeleteModal]);
+        } catch (error) {
+            console.error("Failed to fetch departments:", error);
+        }
+    };
 
     const handleAddOrUpdateDepartment = async () => {
         try {
@@ -85,6 +91,12 @@ const DepartmentManage = (): React.ReactElement => {
         setShowDeleteModal(true);
     };
 
+    const handlePageChange = (newPage: number) => {
+        if (newPage >= 0 && newPage < totalPages) {
+            setPage(newPage);
+        }
+    };
+
     const formatDate = (timestamp: string) => {
         const date = new Date(timestamp);
         return date.toLocaleString();
@@ -128,7 +140,19 @@ const DepartmentManage = (): React.ReactElement => {
                     ))}
                     </tbody>
                 </Table>
+
+                <div className="pagination-controls">
+                    <Button onClick={() => handlePageChange(page - 1)} disabled={page === 0}>
+                        <FontAwesomeIcon icon={faAngleLeft} />
+                    </Button>
+                    <span>Page {page + 1} of {totalPages}</span>
+                    <Button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages - 1}>
+                        <FontAwesomeIcon icon={faAngleRight} />
+                    </Button>
+                </div>
+
             </div>
+
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>{isEditing ? "Edit" : "Add"} Department</Modal.Title>

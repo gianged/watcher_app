@@ -1,4 +1,4 @@
-import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faAngleLeft, faAngleRight, faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import "./UserManage.scss"
@@ -36,46 +36,53 @@ export const UserManage = (): React.ReactElement => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDelete, setUserToDelete] = useState<any | null>(null);
 
+    const [page, setPage] = useState(0);
+    const [size] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
+
     const rightPanelRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await UserManageApi.getAll(authHeader);
-                if (response.success) {
-                    setUserList(response.data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch users:", error);
-            }
-        };
-
-        const fetchRoles = async () => {
-            try {
-                const response = await EnumLoadApi.getRoles();
-                if (response.success) {
-                    setRoleLevels(response.data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch roles:", error);
-            }
-        }
-
-        const fetchDepartments = async () => {
-            try {
-                const response = await DepartmentManageApi.getAll(authHeader);
-                if (response.success) {
-                    setDepartments(response.data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch departments:", error);
-            }
-        }
-
-        fetchUser().then();
+        fetchPagedUsers(page, size).then();
         fetchRoles().then();
         fetchDepartments().then();
-    }, [showRightPanel, showDeleteModal]);
+    }, [showRightPanel, showDeleteModal, page]);
+
+    const fetchPagedUsers = async (page: number, size: number) => {
+        try {
+            const response = await UserManageApi.getPaged(authHeader, page, size);
+            if (response.success) {
+                setUserList(response.data.content);
+                setTotalPages(response.data.totalPages);
+            } else {
+                console.error("Failed to fetch paged users:", response.message);
+            }
+        } catch (error) {
+            console.error("Failed to fetch paged users:", error);
+        }
+    };
+
+    const fetchRoles = async () => {
+        try {
+            const response = await EnumLoadApi.getRoles();
+            if (response.success) {
+                setRoleLevels(response.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch roles:", error);
+        }
+    };
+
+    const fetchDepartments = async () => {
+        try {
+            const response = await DepartmentManageApi.getAll(authHeader);
+            if (response.success) {
+                setDepartments(response.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch departments:", error);
+        }
+    };
 
     const handleAddOrUpdate = async () => {
         try {
@@ -180,6 +187,12 @@ export const UserManage = (): React.ReactElement => {
         return department ? department.departmentName : 'Unknown';
     };
 
+    const handlePageChange = (newPage: number) => {
+        if (newPage >= 0 && newPage < totalPages) {
+            setPage(newPage);
+        }
+    };
+
     return (
         <>
             <div className="user-manage-container">
@@ -226,6 +239,17 @@ export const UserManage = (): React.ReactElement => {
                     ))}
                     </tbody>
                 </Table>
+
+                <div className="pagination-controls">
+                    <Button onClick={() => handlePageChange(page - 1)} disabled={page === 0}>
+                        <FontAwesomeIcon icon={faAngleLeft} />
+                    </Button>
+                    <span>Page {page + 1} of {totalPages}</span>
+                    <Button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages - 1}>
+                        <FontAwesomeIcon icon={faAngleRight} />
+                    </Button>
+                </div>
+
                 {showRightPanel && (
                     <div className="backdrop">
                         <div className="right-panel shadow-lg p-3 mb-5 bg-white rounded" ref={rightPanelRef}>

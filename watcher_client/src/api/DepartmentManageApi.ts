@@ -9,6 +9,32 @@ interface DepartmentManageApiResponse<T> {
 }
 
 const DepartmentManageApi = {
+    getPaged: async (authHeader: {
+        Authorization: string
+    }, page: number, size: number): Promise<DepartmentManageApiResponse<any>> => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/paged`, {
+                headers: authHeader,
+                params: {
+                    page: page,
+                    size: size
+                }
+            });
+
+            return {
+                success: true,
+                message: "Paged departments fetched successfully",
+                data: response.data
+            };
+        } catch (error) {
+            console.error("Failed to fetch paged departments:", error);
+            return {
+                success: false,
+                message: "Failed to fetch paged departments"
+            };
+        }
+    },
+
     getAll: async (authHeader: { Authorization: string }): Promise<DepartmentManageApiResponse<any>> => {
         try {
             const response = await axios.get(API_BASE_URL, {
