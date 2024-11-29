@@ -13,6 +13,6 @@ public interface AnnounceMapper {
     AnnounceDto toAnnounceDto(Announce announce);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(source = "departmentId", target = "department.id")
+    @Mapping(source = "departmentId", target = "department.id", ignore = true)
     Announce partialUpdateAnnounceFromAnnounceDto(AnnounceDto announceDto, @MappingTarget Announce announce);
 }
