@@ -1,0 +1,77 @@
+// ===================================
+// SIDEBAR
+// ===================================
+
+.sidebar {
+  position: fixed;
+  top: $navbar-height;
+  left: 0;
+  bottom: 0;
+  width: $sidebar-width;
+  background-color: $color-gray-800;
+  color: $color-white;
+  padding: $spacing-lg $spacing-md;
+  height: calc(100vh - #{$navbar-height});
+  overflow-y: auto;
+  z-index: $z-index-fixed - 10;
+  @include custom-scrollbar(6px, $color-gray-700, $color-gray-500);
+  transition: $transition-base;
+
+  &.collapsed {
+    width: $sidebar-collapsed-width;
+
+    .nav-text {
+      display: none;
+    }
+  }
+
+  .nav {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-md;
+    color: $color-gray-400;
+    text-decoration: none;
+    border-radius: $border-radius-md;
+    font-size: $font-size-md;
+    transition: $transition-base;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $color-gray-700;
+      color: $color-white;
+    }
+
+    &.active {
+      background-color: $color-primary;
+      color: $color-white;
+      font-weight: $font-weight-medium;
+    }
+
+    .nav-icon {
+      min-width: 20px;
+      text-align: center;
+    }
+  }
+
+  .nav-section {
+    margin-top: $spacing-lg;
+    padding-top: $spacing-lg;
+    border-top: $border-width solid $color-gray-700;
+
+    .section-title {
+      padding: $spacing-sm $spacing-md;
+      color: $color-gray-500;
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+}

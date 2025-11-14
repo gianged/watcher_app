@@ -1,0 +1,32 @@
+// ===================================
+// DARK THEME (Optional)
+// ===================================
+
+.theme-dark {
+  // Override color variables for dark theme
+  --color-bg: #{$color-gray-900};
+  --color-text: #{$color-gray-100};
+  --color-card-bg: #{$color-gray-800};
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  .card {
+    background-color: var(--color-card-bg);
+    color: var(--color-text);
+  }
+
+  .top-navbar {
+    background-color: $color-black;
+  }
+
+  .sidebar {
+    background-color: $color-black;
+  }
+
+  .content {
+    background-color: $color-gray-900;
+  }
+}

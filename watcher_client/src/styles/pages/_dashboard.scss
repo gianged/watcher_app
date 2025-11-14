@@ -1,0 +1,113 @@
+// ===================================
+// DASHBOARD PAGE
+// ===================================
+
+.dashboard-container {
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: $spacing-lg;
+    margin-bottom: $spacing-2xl;
+  }
+
+  .stat-card {
+    @include card-shadow;
+    background: $color-white;
+    padding: $spacing-lg;
+    border-radius: $border-radius-lg;
+    display: flex;
+    align-items: center;
+    gap: $spacing-lg;
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: $border-radius-lg;
+      @include flex-center;
+      font-size: $font-size-2xl;
+      color: $color-white;
+
+      &.primary { background: linear-gradient(135deg, $color-primary, $color-primary-light); }
+      &.success { background: linear-gradient(135deg, $color-success, lighten($color-success, 10%)); }
+      &.warning { background: linear-gradient(135deg, $color-warning, lighten($color-warning, 10%)); }
+      &.danger { background: linear-gradient(135deg, $color-danger, lighten($color-danger, 10%)); }
+      &.info { background: linear-gradient(135deg, $color-info, lighten($color-info, 10%)); }
+    }
+
+    .stat-content {
+      flex: 1;
+
+      .stat-label {
+        color: $color-gray-600;
+        font-size: $font-size-sm;
+        margin-bottom: $spacing-xs;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .stat-value {
+        font-size: $font-size-3xl;
+        font-weight: $font-weight-bold;
+        color: $color-gray-900;
+      }
+
+      .stat-change {
+        font-size: $font-size-sm;
+        margin-top: $spacing-xs;
+
+        &.positive {
+          color: $color-success;
+        }
+
+        &.negative {
+          color: $color-danger;
+        }
+      }
+    }
+  }
+
+  .recent-activity {
+    margin-top: $spacing-2xl;
+
+    .activity-list {
+      list-style: none;
+      padding: 0;
+
+      .activity-item {
+        padding: $spacing-md;
+        border-left: 3px solid $color-primary;
+        background-color: $color-white;
+        margin-bottom: $spacing-md;
+        border-radius: $border-radius-md;
+        box-shadow: $shadow-sm;
+        transition: $transition-base;
+
+        &:hover {
+          transform: translateX(4px);
+          box-shadow: $shadow-md;
+        }
+
+        .activity-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: $spacing-xs;
+
+          .activity-title {
+            font-weight: $font-weight-semibold;
+            color: $color-gray-900;
+          }
+
+          .activity-time {
+            color: $color-gray-600;
+            font-size: $font-size-sm;
+          }
+        }
+
+        .activity-description {
+          color: $color-gray-700;
+          font-size: $font-size-sm;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+// ===================================
+// BUTTONS
+// ===================================
+
+.btn {
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $border-radius-md;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  border: none;
+  cursor: pointer;
+  transition: $transition-base;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-primary {
+  @include button-variant($color-primary);
+  @include gradient-primary;
+
+  &:hover:not(:disabled) {
+    @include gradient-primary-reverse;
+  }
+}
+
+.btn-secondary {
+  @include button-variant($color-secondary);
+}
+
+.btn-success {
+  @include button-variant($color-success);
+}
+
+.btn-danger {
+  @include button-variant($color-danger);
+}
+
+.btn-warning {
+  @include button-variant($color-warning, $color-gray-900);
+}
+
+.btn-info {
+  @include button-variant($color-info);
+}
+
+.btn-dark {
+  @include button-variant($color-gray-800);
+}
+
+.btn-light {
+  @include button-variant($color-gray-200, $color-gray-900);
+}
+
+.btn-outline-primary {
+  background-color: transparent;
+  border: $border-width-thick solid $color-primary;
+  color: $color-primary;
+
+  &:hover:not(:disabled) {
+    background-color: $color-primary;
+    color: $color-white;
+  }
+}
+
+// Button sizes
+.btn-sm {
+  padding: $spacing-xs $spacing-md;
+  font-size: $font-size-sm;
+}
+
+.btn-lg {
+  padding: $spacing-md $spacing-xl;
+  font-size: $font-size-lg;
+}
+
+// Button block
+.btn-block {
+  width: 100%;
+  display: flex;
+}
+
+// Icon button
+.btn-icon {
+  padding: $spacing-sm;
+  border-radius: $border-radius-full;
+  width: 40px;
+  height: 40px;
+}

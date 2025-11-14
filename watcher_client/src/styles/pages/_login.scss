@@ -1,0 +1,100 @@
+// ===================================
+// LOGIN PAGE
+// ===================================
+
+.login-page {
+  min-height: 100vh;
+  @include flex-center;
+  @include gradient-primary;
+  padding: $spacing-xl;
+
+  body {
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .login-container {
+    width: 100%;
+    max-width: 500px;
+    background-color: alpha($color-white, 0.95);
+    border-radius: $border-radius-xl;
+    box-shadow: $shadow-2xl;
+    padding: $spacing-2xl;
+    @include fade-in;
+
+    .login-header {
+      text-align: center;
+      margin-bottom: $spacing-xl;
+
+      .logo {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto $spacing-md;
+      }
+
+      h1 {
+        font-size: $font-size-3xl;
+        margin-bottom: $spacing-sm;
+        @include gradient-primary;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      p {
+        color: $color-gray-600;
+        font-size: $font-size-md;
+      }
+    }
+
+    .login-tabs {
+      margin-bottom: $spacing-lg;
+
+      .nav-link {
+        padding: $spacing-md;
+        font-weight: $font-weight-semibold;
+        color: $color-gray-600;
+        border: none;
+        background: none;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: $transition-base;
+        flex: 1;
+        text-align: center;
+
+        &:hover {
+          color: $color-primary;
+        }
+
+        &.active {
+          color: $color-primary;
+          border-bottom-color: $color-primary;
+        }
+      }
+    }
+
+    .login-form {
+      .form-button {
+        @include gradient-primary;
+        width: 100%;
+        margin-top: $spacing-lg;
+
+        &:hover {
+          @include gradient-primary-reverse;
+        }
+      }
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: $spacing-lg;
+      padding-top: $spacing-lg;
+      border-top: $border-width solid $border-color;
+
+      a {
+        color: $color-primary;
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+}

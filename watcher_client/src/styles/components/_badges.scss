@@ -1,0 +1,63 @@
+// ===================================
+// BADGES
+// ===================================
+
+.badge {
+  @include badge-variant($color-gray-600);
+}
+
+.badge-primary {
+  @include badge-variant($color-primary);
+}
+
+.badge-secondary {
+  @include badge-variant($color-secondary);
+}
+
+.badge-success {
+  @include badge-variant($color-success);
+}
+
+.badge-danger {
+  @include badge-variant($color-danger);
+}
+
+.badge-warning {
+  @include badge-variant($color-warning, $color-gray-900);
+}
+
+.badge-info {
+  @include badge-variant($color-info);
+}
+
+// Status badges
+.badge-open {
+  @include badge-variant($color-open);
+}
+
+.badge-in-progress {
+  @include badge-variant($color-in-progress, $color-gray-900);
+}
+
+.badge-resolved {
+  @include badge-variant($color-resolved);
+}
+
+.badge-closed {
+  @include badge-variant($color-closed);
+}
+
+.badge-rejected {
+  @include badge-variant($color-rejected);
+}
+
+// Badge sizes
+.badge-sm {
+  padding: 2px 6px;
+  font-size: 0.65rem;
+}
+
+.badge-lg {
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-sm;
+}
