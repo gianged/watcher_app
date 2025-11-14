@@ -1,14 +1,30 @@
 package com.watcher.models;
 
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
-import org.hibernate.annotations.*;
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 
 @Entity
 @Table(name = "tickets")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
+@SQLDelete(sql = "UPDATE tickets SET deleted_at = CURRENT_TIMESTAMP WHERE ticket_id = ?")
+@Where(clause = "deleted_at IS NULL")
 public class Ticket {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ticket_id", nullable = false)
@@ -17,81 +33,58 @@ public class Ticket {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "app_user_id")
+    @ToString.Exclude
     private AppUser appUser;
 
     @Lob
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "status")
-    private Integer status;
+    @Builder.Default
+    private Integer status = 0; // 0: Open, 1: In Progress, 2: Resolved, 3: Closed
+
+    @Column(name = "priority")
+    @Builder.Default
+    private Integer priority = 0; // 0: Low, 1: Medium, 2: High, 3: Critical
 
     @Column(name = "is_active")
-    private Boolean isActive;
+    @Builder.Default
+    private Boolean isActive = true;
 
-    @CreationTimestamp
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "create_at", nullable = false, updatable = false)
-    private Instant createAt;
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
 
-    @UpdateTimestamp
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "update_at", nullable = false)
-    private Instant updateAt;
+    @LastModifiedDate
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
 
-    public Integer getId() {
-        return id;
+    @CreatedBy
+    @Column(name = "created_by", updatable = false, length = 100)
+    private String createdBy;
+
+    @LastModifiedBy
+    @Column(name = "updated_by", length = 100)
+    private String updatedBy;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
+    public void softDelete() {
+        this.deletedAt = Instant.now();
+        this.isActive = false;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public boolean isDeleted() {
+        return deletedAt != null;
     }
 
-    public AppUser getAppUser() {
-        return appUser;
+    public boolean isOpen() {
+        return status != null && status == 0;
     }
 
-    public void setAppUser(AppUser appUser) {
-        this.appUser = appUser;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public Instant getCreateAt() {
-        return createAt;
-    }
-
-    public void setCreateAt(Instant createAt) {
-        this.createAt = createAt;
-    }
-
-    public Instant getUpdateAt() {
-        return updateAt;
-    }
-
-    public void setUpdateAt(Instant updateAt) {
-        this.updateAt = updateAt;
+    public boolean isClosed() {
+        return status != null && (status == 2 || status == 3);
     }
 }

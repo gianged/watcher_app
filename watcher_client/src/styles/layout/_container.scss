@@ -1,0 +1,70 @@
+// ===================================
+// CONTAINER & CONTENT
+// ===================================
+
+.main-layout {
+  height: 100vh;
+  overflow: hidden;
+  @include gradient-bg;
+}
+
+.content {
+  position: fixed;
+  top: $navbar-height;
+  left: $sidebar-width;
+  right: 0;
+  bottom: 0;
+  background-color: $color-bg-light;
+  overflow-y: auto;
+  padding: $spacing-xl;
+  @include custom-scrollbar;
+
+  &.full-width {
+    left: 0;
+  }
+
+  &.collapsed-sidebar {
+    left: $sidebar-collapsed-width;
+  }
+}
+
+.container {
+  max-width: $container-max-width;
+  margin: 0 auto;
+  padding: 0 $container-padding;
+  width: 100%;
+}
+
+.container-fluid {
+  width: 100%;
+  padding: 0 $container-padding;
+}
+
+.page-header {
+  margin-bottom: $spacing-xl;
+  padding-bottom: $spacing-lg;
+  border-bottom: $border-width-thick solid $border-color;
+
+  .page-title {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: $color-gray-900;
+    margin-bottom: $spacing-sm;
+  }
+
+  .page-subtitle {
+    color: $color-gray-600;
+    font-size: $font-size-md;
+  }
+}
+
+.section {
+  margin-bottom: $spacing-2xl;
+
+  .section-title {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    margin-bottom: $spacing-lg;
+    color: $color-gray-800;
+  }
+}

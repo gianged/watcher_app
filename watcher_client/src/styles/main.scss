@@ -1,0 +1,49 @@
+// ===================================
+// WATCHER APP - MAIN STYLESHEET
+// 7-1 ARCHITECTURE PATTERN
+// ===================================
+
+// 1. ABSTRACTS
+// Configuration and helpers
+@import 'abstracts/variables';
+@import 'abstracts/functions';
+@import 'abstracts/mixins';
+
+// 2. VENDORS
+// Third-party libraries (if any)
+// @import 'vendors/bootstrap';
+
+// 3. BASE
+// Boilerplate code
+@import 'base/reset';
+@import 'base/typography';
+
+// 4. LAYOUT
+// Macro layout of the page
+@import 'layout/navbar';
+@import 'layout/sidebar';
+@import 'layout/container';
+@import 'layout/grid';
+
+// 5. COMPONENTS
+// Micro layout - reusable components
+@import 'components/buttons';
+@import 'components/forms';
+@import 'components/cards';
+@import 'components/badges';
+@import 'components/tables';
+@import 'components/modals';
+@import 'components/utilities';
+@import 'components/animations';
+
+// 6. PAGES
+// Page-specific styles
+@import 'pages/login';
+@import 'pages/dashboard';
+@import 'pages/management';
+@import 'pages/profile';
+
+// 7. THEMES
+// Different visual themes (if any)
+// @import 'themes/dark';
+// @import 'themes/admin';

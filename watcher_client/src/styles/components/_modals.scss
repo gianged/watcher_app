@@ -1,0 +1,85 @@
+// ===================================
+// MODALS & PANELS
+// ===================================
+
+.backdrop {
+  @include absolute-cover;
+  position: fixed;
+  background-color: alpha($color-black, 0.5);
+  @include flex-center;
+  z-index: $z-index-modal-backdrop;
+  @include fade-in;
+}
+
+.modal {
+  background-color: $color-white;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-2xl;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  @include custom-scrollbar;
+  @include fade-in;
+}
+
+.modal-sm { max-width: 400px; }
+.modal-md { max-width: 600px; }
+.modal-lg { max-width: 800px; }
+.modal-xl { max-width: 1000px; }
+
+.modal-header {
+  padding: $spacing-lg;
+  border-bottom: $border-width solid $border-color;
+  @include flex-between;
+
+  .modal-title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    margin: 0;
+  }
+
+  .close-button {
+    background: none;
+    border: none;
+    font-size: $font-size-2xl;
+    cursor: pointer;
+    color: $color-gray-600;
+    transition: $transition-base;
+
+    &:hover {
+      color: $color-gray-900;
+    }
+  }
+}
+
+.modal-body {
+  padding: $spacing-lg;
+}
+
+.modal-footer {
+  padding: $spacing-lg;
+  border-top: $border-width solid $border-color;
+  @include flex-between;
+  gap: $spacing-md;
+}
+
+// Right panel (slide-in)
+.right-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 400px;
+  background-color: $color-white;
+  box-shadow: $shadow-2xl;
+  padding: $spacing-xl $spacing-lg;
+  overflow-y: auto;
+  z-index: $z-index-modal;
+  @include custom-scrollbar;
+  @include slide-in-right;
+
+  &.panel-sm { width: 300px; }
+  &.panel-md { width: 400px; }
+  &.panel-lg { width: 500px; }
+  &.panel-xl { width: 600px; }
+}

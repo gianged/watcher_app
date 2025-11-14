@@ -1,27 +1,103 @@
-# Watcher
+# 🎯 Watcher Application
 
-Watcher is a web-based application designed for managing staff and documenting tickets for IT administrators. It helps streamline the workflow by providing a centralized platform for tracking issues, managing user requests, and maintaining records efficiently.
+A modern, full-stack ticketing and management system built with **Spring Boot**, **React**, and **TypeScript**.
 
-## Features
+## ✨ Key Features
 
-- **User Management**: Manage staff details, roles, and permissions.
-- **Ticketing System**: Create, update, and track IT-related issues and requests.
-- **Notifications**: Receive alerts and notifications for new tickets and updates.
-- **Search and Filter**: Quickly find tickets with powerful search and filter options.
+- 🎫 **Ticket Management** - Track and resolve support tickets with priorities and statuses
+- 👥 **User Management** - Role-based access control (Admin, Manager, User)
+- 🏢 **Department Organization** - Group users and tickets by departments
+- 📢 **Announcements** - Communicate with your team effectively
+- 📊 **Analytics Dashboard** - Real-time charts and metrics
+- 🔒 **Secure Authentication** - JWT with refresh tokens
+- ⚡ **High Performance** - Spring Boot backend with JPA/Hibernate
+- 🎨 **Modern UI** - SCSS 7-1 architecture with smooth animations
 
-## Technology Stack
+## 🚀 Quick Start
 
-- **Frontend**: Vite with React
-- **Backend**: Spring Boot (Java)
-- **Database**: MySQL
-- **API Communication**: RESTful API
+### Backend Setup (Spring Boot)
+```bash
+cd watcher_server
 
-## Installation
+# Set environment variables
+export MYSQL_USERNAME=root
+export MYSQL_PASSWORD=your_password
+export JWT_SECRET=your-secret-key
 
-Follow the steps below to set up Watcher on your local machine.
+# Run the application
+mvn spring-boot:run
+# Runs on http://localhost:8081
+```
 
-### Prerequisites
+### Frontend Setup (React)
+```bash
+cd watcher_client
+npm install
+npm run dev  # Runs on http://localhost:3000
+```
 
-- **Frontend**: Node.js (version 22 or later), NPM
-- **Backend**: Java 21 or higher, Maven, Spring Boot
-- **Database**: MySQL (ensure MySQL server is installed and running)
+## 📚 Documentation
+
+Comprehensive documentation is available in the `/docs` folder:
+
+- **[📖 Documentation Hub](docs/README.md)** - Complete documentation index
+- **[🔌 API Reference](docs/API.md)** - REST API endpoints and examples
+- **[🏗️ Architecture Guide](docs/ARCHITECTURE.md)** - System design and patterns
+- **[🔐 Authentication Guide](docs/AUTHENTICATION.md)** - JWT authentication flow
+- **[🗄️ Database Schema](docs/DATABASE.md)** - Database design and relationships
+- **[🛠️ Development Guide](docs/DEVELOPMENT.md)** - Setup and coding standards
+
+### Quick Links
+- **Backend API (Swagger)**: http://localhost:8081/swagger-ui.html
+- **Backend README**: [watcher_server/README.md](watcher_server/README.md)
+- **SCSS Guide**: [watcher_client/src/styles/README.md](watcher_client/src/styles/README.md)
+
+## 🛠️ Technology Stack
+
+**Backend:** Spring Boot 3.3.4, Java 23, JPA/Hibernate, MySQL, JWT, Lombok
+**Frontend:** React 18, TypeScript, TanStack Query, Zustand, SCSS, Framer Motion, Chart.js
+
+## 📖 Features
+
+- User authentication and authorization with JWT
+- Ticket system with priorities and statuses
+- Department management
+- Announcements with scheduling
+- Interactive dashboard with charts
+- Real-time notifications via React Hot Toast
+- Responsive design with SCSS 7-1 architecture
+- Type-safe forms with React Hook Form + Zod
+- Optimized data fetching with TanStack Query
+- State management with Zustand
+- Smooth animations with Framer Motion
+
+## 🏗️ Architecture
+
+**Backend:** Layered architecture (Controller → Service → Repository)
+**Frontend:** Component-based with custom hooks and global state management
+**Database:** MySQL with JPA/Hibernate ORM
+**API:** RESTful endpoints with comprehensive Swagger documentation
+
+## 🔒 Security
+
+- JWT-based authentication
+- BCrypt password hashing
+- Role-based access control (RBAC)
+- Spring Security configuration
+- Input validation
+- CORS support
+
+## 📊 Performance
+
+- Hibernate batch processing
+- Query optimization
+- React Query caching
+- Pagination support
+- Lazy loading
+- Code splitting
+
+For detailed feature documentation, see the README files in each subdirectory.
+
+---
+
+**Built with ❤️ using Spring Boot and React**

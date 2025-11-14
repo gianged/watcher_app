@@ -1,0 +1,23 @@
+// ===================================
+// COLOR FUNCTIONS
+// ===================================
+
+@function alpha($color, $opacity) {
+  @return rgba($color, $opacity);
+}
+
+// ===================================
+// SPACING FUNCTIONS
+// ===================================
+
+@function spacing($multiplier) {
+  @return $spacing-md * $multiplier;
+}
+
+// ===================================
+// REM CONVERSION
+// ===================================
+
+@function rem($pixels) {
+  @return #{$pixels / 16}rem;
+}

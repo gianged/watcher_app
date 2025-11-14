@@ -1,0 +1,54 @@
+// ===================================
+// CARDS
+// ===================================
+
+.card {
+  background-color: $color-white;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  overflow: hidden;
+  transition: $transition-base;
+
+  &:hover {
+    box-shadow: $shadow-lg;
+  }
+}
+
+.card-header {
+  padding: $spacing-md $spacing-lg;
+  background-color: $color-gray-100;
+  border-bottom: $border-width solid $border-color;
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-lg;
+}
+
+.card-body {
+  padding: $spacing-lg;
+}
+
+.card-footer {
+  padding: $spacing-md $spacing-lg;
+  background-color: $color-gray-100;
+  border-top: $border-width solid $border-color;
+}
+
+.card-title {
+  margin-bottom: $spacing-sm;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+}
+
+.card-text {
+  margin-bottom: $spacing-md;
+  color: $color-gray-700;
+}
+
+.card-clickable {
+  cursor: pointer;
+  transition: $transition-base;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-xl;
+  }
+}

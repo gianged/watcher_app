@@ -1,61 +1,74 @@
 package com.watcher.controllers;
 
-import com.watcher.dto.AuthenticateDto;
-import com.watcher.services.AuthenticateService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.watcher.dto.request.LoginRequest;
+import com.watcher.dto.request.RefreshTokenRequest;
+import com.watcher.dto.request.RegisterRequest;
+import com.watcher.dto.response.ApiResponse;
+import com.watcher.dto.response.AuthResponse;
+import com.watcher.services.AuthService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.Console;
-
+@Slf4j
 @RestController
 @RequestMapping("/watcher/auth")
+@RequiredArgsConstructor
 public class AuthenticateController {
-    private final AuthenticateService authenticateService;
 
-    @Autowired
-    public AuthenticateController(AuthenticateService authenticateService) {
-        this.authenticateService = authenticateService;
-    }
+    private final AuthService authService;
 
     @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("Hello, This is Watcher authentication route!");
+    public ResponseEntity<ApiResponse<String>> test() {
+        return ResponseEntity.ok(
+                ApiResponse.success("Hello, This is Watcher authentication route!")
+        );
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticateDto> login(@RequestBody AuthenticateDto authenticateDto) {
-        AuthenticateDto dto = authenticateService.loginUser(authenticateDto.getUsername(), authenticateDto.getPassword());
-        return ResponseEntity.ok(dto);
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout() {
-        authenticateService.logoutUser();
-        return ResponseEntity.ok("User logged out successfully!");
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+        log.info("Login attempt for user: {}", request.getUsername());
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(
+                ApiResponse.success(response, "Login successful")
+        );
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticateDto> register(@RequestBody AuthenticateDto authenticateDto) {
-        AuthenticateDto dto = authenticateService.registerUser(authenticateDto.getUsername(), authenticateDto.getPassword());
-        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
+        log.info("Registration attempt for user: {}", request.getUsername());
+        AuthResponse response = authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ApiResponse.success(response, "Registration successful")
+        );
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<AuthenticateDto> updateUser(@RequestParam String id,
-                                                      @RequestParam(required = false) String newPassword,
-                                                      @RequestParam(required = false) MultipartFile newProfilePicture) {
-        AuthenticateDto updateUser = authenticateService.updateUser(id, newPassword, newProfilePicture);
-        return ResponseEntity.ok(updateUser);
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<AuthResponse>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        log.info("Token refresh attempt");
+        AuthResponse response = authService.refreshToken(request);
+        return ResponseEntity.ok(
+                ApiResponse.success(response, "Token refreshed successfully")
+        );
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout() {
+        log.info("Logout attempt");
+        authService.logout();
+        return ResponseEntity.ok(
+                ApiResponse.success(null, "Logout successful")
+        );
     }
 
     @GetMapping("/check-username")
-    public ResponseEntity<Boolean> checkUsername(@RequestParam String input) {
-        if (!authenticateService.usernameCheck(input)) {
-            return ResponseEntity.ok(true);
-        }
-        return ResponseEntity.ok(false);
+    public ResponseEntity<ApiResponse<Boolean>> checkUsername(@RequestParam String username) {
+        boolean available = authService.checkUsernameAvailability(username);
+        return ResponseEntity.ok(
+                ApiResponse.success(available, available ? "Username is available" : "Username is taken")
+        );
     }
 }

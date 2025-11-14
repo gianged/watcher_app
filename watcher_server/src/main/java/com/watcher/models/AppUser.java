@@ -1,17 +1,34 @@
 package com.watcher.models;
 
 import jakarta.persistence.*;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Table;
-import org.hibernate.annotations.*;
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "app_users")
-public class AppUser {
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
+@SQLDelete(sql = "UPDATE app_users SET deleted_at = CURRENT_TIMESTAMP WHERE app_user_id = ?")
+@Where(clause = "deleted_at IS NULL")
+public class AppUser implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "app_user_id", nullable = false)
@@ -21,113 +38,103 @@ public class AppUser {
     @Lob
     private byte[] profilePicture;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true, length = 100)
     private String username;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
+    @ToString.Exclude
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "department_id", nullable = true)
+    @JoinColumn(name = "department_id")
+    @ToString.Exclude
     private Department department;
 
     @Column(name = "role_level")
-    private Integer roleLevel;
+    @Builder.Default
+    private Integer roleLevel = 0;
 
     @Column(name = "is_active")
-    private Boolean isActive;
+    @Builder.Default
+    private Boolean isActive = true;
 
-    @CreationTimestamp
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "create_at", nullable = false, updatable = false)
-    private Instant createAt;
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
 
-    @UpdateTimestamp
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "update_at", nullable = false)
-    private Instant updateAt;
+    @LastModifiedDate
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
 
-    @OneToMany(mappedBy = "appUser")
+    @CreatedBy
+    @Column(name = "created_by", updatable = false, length = 100)
+    private String createdBy;
+
+    @LastModifiedBy
+    @Column(name = "updated_by", length = 100)
+    private String updatedBy;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
+    @OneToMany(mappedBy = "appUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @ToString.Exclude
     private Set<Ticket> tickets = new LinkedHashSet<>();
 
-    public Integer getId() {
-        return id;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @ToString.Exclude
+    private Set<RefreshToken> refreshTokens = new LinkedHashSet<>();
+
+    // UserDetails implementation
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        String role = switch (roleLevel != null ? roleLevel : 0) {
+            case 1 -> "ROLE_ADMIN";
+            case 2 -> "ROLE_MANAGER";
+            default -> "ROLE_USER";
+        };
+        return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public byte[] getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(byte[] profilePicture) {
-        this.profilePicture = profilePicture;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
+    @Override
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    @Override
+    public String getUsername() {
+        return username;
     }
 
-    public Department getDepartment() {
-        return department;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public void setDepartment(Department department) {
-        this.department = department;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public Integer getRoleLevel() {
-        return roleLevel;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
-    public void setRoleLevel(Integer roleLevel) {
-        this.roleLevel = roleLevel;
+    @Override
+    public boolean isEnabled() {
+        return isActive != null && isActive && deletedAt == null;
     }
 
-    public Boolean getIsActive() {
-        return isActive;
+    public void softDelete() {
+        this.deletedAt = Instant.now();
+        this.isActive = false;
     }
 
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public Instant getCreateAt() {
-        return createAt;
-    }
-
-    public void setCreateAt(Instant createAt) {
-        this.createAt = createAt;
-    }
-
-    public Instant getUpdateAt() {
-        return updateAt;
-    }
-
-    public void setUpdateAt(Instant updateAt) {
-        this.updateAt = updateAt;
-    }
-
-    public Set<Ticket> getTickets() {
-        return tickets;
-    }
-
-    public void setTickets(Set<Ticket> tickets) {
-        this.tickets = tickets;
+    public boolean isDeleted() {
+        return deletedAt != null;
     }
 }
