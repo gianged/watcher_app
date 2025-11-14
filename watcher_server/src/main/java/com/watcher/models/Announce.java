@@ -1,22 +1,40 @@
 package com.watcher.models;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 
 @Entity
 @Table(name = "announces")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
+@SQLDelete(sql = "UPDATE announces SET deleted_at = CURRENT_TIMESTAMP WHERE announce_id = ?")
+@Where(clause = "deleted_at IS NULL")
 public class Announce {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "announce_id", nullable = false)
     private Integer id;
 
+    @Column(name = "title", length = 500)
+    private String title;
+
     @Lob
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "start_date")
@@ -28,91 +46,57 @@ public class Announce {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "department_id")
+    @ToString.Exclude
     private Department department;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "create_at")
-    private Instant createAt;
-
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "update_at")
-    private Instant updateAt;
-
     @Column(name = "is_public")
-    private Boolean isPublic;
+    @Builder.Default
+    private Boolean isPublic = false;
 
     @Column(name = "is_active")
-    private Boolean isActive;
+    @Builder.Default
+    private Boolean isActive = true;
 
-    public Integer getId() {
-        return id;
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
+    @CreatedBy
+    @Column(name = "created_by", updatable = false, length = 100)
+    private String createdBy;
+
+    @LastModifiedBy
+    @Column(name = "updated_by", length = 100)
+    private String updatedBy;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
+    public void softDelete() {
+        this.deletedAt = Instant.now();
+        this.isActive = false;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public boolean isDeleted() {
+        return deletedAt != null;
     }
 
-    public String getContent() {
-        return content;
+    public boolean isCurrentlyActive() {
+        Instant now = Instant.now();
+        boolean isInDateRange = (startDate == null || now.isAfter(startDate)) &&
+                               (endDate == null || now.isBefore(endDate));
+        return isActive && !isDeleted() && isInDateRange;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public boolean isExpired() {
+        return endDate != null && Instant.now().isAfter(endDate);
     }
 
-    public Instant getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Instant startDate) {
-        this.startDate = startDate;
-    }
-
-    public Instant getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Instant endDate) {
-        this.endDate = endDate;
-    }
-
-    public Department getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
-
-    public Instant getCreateAt() {
-        return createAt;
-    }
-
-    public void setCreateAt(Instant createAt) {
-        this.createAt = createAt;
-    }
-
-    public Instant getUpdateAt() {
-        return updateAt;
-    }
-
-    public void setUpdateAt(Instant updateAt) {
-        this.updateAt = updateAt;
-    }
-
-    public Boolean getIsPublic() {
-        return isPublic;
-    }
-
-    public void setIsPublic(Boolean isPublic) {
-        this.isPublic = isPublic;
-    }
-
-    public Boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
+    public boolean isScheduled() {
+        return startDate != null && Instant.now().isBefore(startDate);
     }
 }
