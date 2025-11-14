@@ -1,27 +1,56 @@
-# Watcher
+# 🎯 Watcher Application
 
-Watcher is a web-based application designed for managing staff and documenting tickets for IT administrators. It helps streamline the workflow by providing a centralized platform for tracking issues, managing user requests, and maintaining records efficiently.
+A modern, full-stack ticketing and management system built with **Fastify**, **React**, and **TypeScript**.
 
-## Features
+## ✨ Key Features
 
-- **User Management**: Manage staff details, roles, and permissions.
-- **Ticketing System**: Create, update, and track IT-related issues and requests.
-- **Notifications**: Receive alerts and notifications for new tickets and updates.
-- **Search and Filter**: Quickly find tickets with powerful search and filter options.
+- 🎫 **Ticket Management** - Track and resolve support tickets with priorities and statuses
+- 👥 **User Management** - Role-based access control (Admin, Manager, User)
+- 🏢 **Department Organization** - Group users and tickets by departments
+- 📢 **Announcements** - Communicate with your team effectively  
+- 📊 **Analytics Dashboard** - Real-time charts and metrics
+- 🔒 **Secure Authentication** - JWT with refresh tokens
+- ⚡ **High Performance** - Fastify backend, React Query frontend
+- 🎨 **Modern UI** - SCSS 7-1 architecture with smooth animations
 
-## Technology Stack
+## 🚀 Quick Start
 
-- **Frontend**: Vite with React
-- **Backend**: Spring Boot (Java)
-- **Database**: MySQL
-- **API Communication**: RESTful API
+### Backend Setup
+```bash
+cd watcher_fastify_server
+npm install
+cp .env.example .env  # Configure your database
+npm run prisma:migrate
+npm run dev  # Runs on http://localhost:8081
+```
 
-## Installation
+### Frontend Setup
+```bash
+cd watcher_client
+npm install
+npm run dev  # Runs on http://localhost:3000
+```
 
-Follow the steps below to set up Watcher on your local machine.
+## 📚 Documentation
 
-### Prerequisites
+- **Backend API**: http://localhost:8081/swagger
+- **Backend README**: [watcher_fastify_server/README.md](watcher_fastify_server/README.md)
+- **SCSS Guide**: [watcher_client/src/styles/README.md](watcher_client/src/styles/README.md)
 
-- **Frontend**: Node.js (version 22 or later), NPM
-- **Backend**: Java 21 or higher, Maven, Spring Boot
-- **Database**: MySQL (ensure MySQL server is installed and running)
+## 🛠️ Technology Stack
+
+**Backend:** Fastify, TypeScript, Prisma, MySQL, JWT  
+**Frontend:** React, TypeScript, TanStack Query, Zustand, SCSS, Framer Motion, Chart.js
+
+## 📖 Features
+
+- User authentication and authorization
+- Ticket system with priorities and statuses
+- Department management
+- Announcements with scheduling
+- Interactive dashboard with charts
+- Real-time notifications
+- Responsive design
+- Dark mode support
+
+For detailed feature documentation, see the README files in each subdirectory.
