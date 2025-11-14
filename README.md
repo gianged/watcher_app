@@ -38,6 +38,16 @@ npm run dev  # Runs on http://localhost:3000
 
 ## 📚 Documentation
 
+Comprehensive documentation is available in the `/docs` folder:
+
+- **[📖 Documentation Hub](docs/README.md)** - Complete documentation index
+- **[🔌 API Reference](docs/API.md)** - REST API endpoints and examples
+- **[🏗️ Architecture Guide](docs/ARCHITECTURE.md)** - System design and patterns
+- **[🔐 Authentication Guide](docs/AUTHENTICATION.md)** - JWT authentication flow
+- **[🗄️ Database Schema](docs/DATABASE.md)** - Database design and relationships
+- **[🛠️ Development Guide](docs/DEVELOPMENT.md)** - Setup and coding standards
+
+### Quick Links
 - **Backend API (Swagger)**: http://localhost:8081/swagger-ui.html
 - **Backend README**: [watcher_server/README.md](watcher_server/README.md)
 - **SCSS Guide**: [watcher_client/src/styles/README.md](watcher_client/src/styles/README.md)
